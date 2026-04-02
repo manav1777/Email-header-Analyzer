@@ -28,13 +28,12 @@ def index():
             result = analyze_header(header_text)
     return render_template("index.html", result=result)
 
-import os
-from flask import Flask
+# optional root test route
+@app.route("/health")
+def health():
+    return "Email Header Analyzer is running!"
 
-app = Flask(__name__)
-
-# your routes here
-
+# --- Start app ---
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))  # use Render's port if provided
+    port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=True)
