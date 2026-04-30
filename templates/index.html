@@ -7,7 +7,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: #e2e8f0; /* soft light background */
+            background: #e2e8f0;
             margin: 0;
             padding: 0;
         }
@@ -23,7 +23,7 @@
 
         h1 {
             text-align: center;
-            color: #1e3a8a; /* dark blue */
+            color: #1e3a8a;
         }
 
         form {
@@ -47,14 +47,29 @@
             font-size: 16px;
             cursor: pointer;
             border: none;
-            background: #2563eb; /* bright blue */
+            background: #2563eb;
             color: #fff;
             border-radius: 5px;
             transition: background 0.3s;
+            margin-top: 10px;
         }
 
         input[type="submit"]:hover {
-            background: #1d4ed8; /* darker blue on hover */
+            background: #1d4ed8;
+        }
+
+        button {
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            border: none;
+            background: #0f172a;
+            color: white;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background: #1e293b;
         }
 
         table {
@@ -90,39 +105,69 @@
             font-weight: bold;
         }
 
-        /* Optional: subtle row hover */
         tr:hover {
             background-color: #e0f2fe;
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <h1>Email Header Analyzer</h1>
-        <form method="POST">
-            <label for="email_header">Paste full email header below:</label><br>
-            <textarea name="email_header" id="email_header" required>{{ request.form.get('email_header', '') }}</textarea><br>
-            <input type="submit" value="Analyze Header">
-        </form>
 
-        {% if result %}
-            <h2>Analysis Result</h2>
-            <table>
-                <tr><th>Field</th><th>Value</th></tr>
-                <tr><td>From</td><td>{{ result['From'] }}</td></tr>
-                <tr><td>Return-Path</td><td>{{ result['Return-Path'] }}</td></tr>
-                <tr><td>Message-ID</td><td>{{ result['Message-ID'] }}</td></tr>
-                <tr><td>Spoof Suspected</td><td>{{ result['Spoof Suspected'] }}</td></tr>
-                <tr><td>SPF Check</td><td>{{ result['SPF Check'] }}</td></tr>
-                <tr><td>DKIM</td><td>{{ result['DKIM'] }}</td></tr>
-                <tr>
-                    <td>Risk Level</td>
-                    <td class="{% if result['Risk Level'] == 'High Risk' %}high-risk{% elif result['Risk Level'] == 'Suspicious' %}suspicious{% else %}safe{% endif %}">
-                        {{ result['Risk Level'] }}
-                    </td>
-                </tr>
-            </table>
-        {% endif %}
-    </div>
+<body>
+<div class="container">
+
+    <h1>Email Header Analyzer</h1>
+
+    <form method="POST">
+
+        <label for="email_header">Paste full email header below:</label><br>
+
+        <button type="button" onclick="loadDemo()">
+            Try Example Email Header
+        </button>
+
+        <textarea name="email_header" id="email_header" required>
+{{ request.form.get('email_header', '') }}
+        </textarea><br>
+
+        <input type="submit" value="Analyze Header">
+
+    </form>
+
+    {% if result %}
+        <h2>Analysis Result</h2>
+
+        <table>
+            <tr><th>Field</th><th>Value</th></tr>
+            <tr><td>From</td><td>{{ result['From'] }}</td></tr>
+            <tr><td>Return-Path</td><td>{{ result['Return-Path'] }}</td></tr>
+            <tr><td>Message-ID</td><td>{{ result['Message-ID'] }}</td></tr>
+            <tr><td>Spoof Suspected</td><td>{{ result['Spoof Suspected'] }}</td></tr>
+            <tr><td>SPF Check</td><td>{{ result['SPF Check'] }}</td></tr>
+            <tr><td>DKIM</td><td>{{ result['DKIM'] }}</td></tr>
+
+            <tr>
+                <td>Risk Level</td>
+                <td class="{% if result['Risk Level'] == 'High Risk' %}high-risk{% elif result['Risk Level'] == 'Suspicious' %}suspicious{% else %}safe{% endif %}">
+                    {{ result['Risk Level'] }}
+                </td>
+            </tr>
+        </table>
+    {% endif %}
+
+</div>
+
+<script>
+function loadDemo() {
+    document.getElementById("email_header").value = `
+From: security-alert@paypal-secure.com
+Return-Path: hacker@fake-domain.com
+Message-ID: <abc123@phishing.com>
+Received: from unknown (185.143.223.11)
+Subject: Urgent Account Verification Required
+SPF: fail
+DKIM: missing
+`;
+}
+</script>
+
 </body>
 </html>

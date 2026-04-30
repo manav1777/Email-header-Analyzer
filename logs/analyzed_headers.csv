@@ -13,3 +13,6 @@
 ,,,False,No IP found,DKIM Missing,Suspicious
 ,,,False,No IP found,DKIM Missing,Suspicious
 Bank of America <customerservice@emcom.bankofamerica.com>,,,True,No IP found,DKIM Missing,High Risk
+security-alert@paypal-secure.com,hacker@fake-domain.com,<abc123@phishing.com>,True,No IP found,DKIM Missing,High Risk
+security-alert@paypal-secure.com,hacker@fake-domain.com,<abc123@phishing.com>,True,No IP found,DKIM Missing,High Risk
+security-alert@paypal-secure.com,hacker@fake-domain.com,<abc123@phishing.com>,True,No IP found,DKIM Missing,High Risk

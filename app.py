@@ -22,11 +22,25 @@ app = Flask(__name__)
 @app.route("/", methods=["GET", "POST"])
 def index():
     result = None
+    demo_header = ""
+
     if request.method == "POST":
         header_text = request.form.get("email_header")
         if header_text:
             result = analyze_header(header_text)
-    return render_template("index.html", result=result)
+
+    return render_template("index.html", result=result, demo_header=demo_header)
+
+@app.route("/demo")
+def demo():
+    sample_header = """
+From: fake@paypal-security.com
+Return-Path: attacker@bad-domain.com
+Received: from unknown (192.168.1.1)
+Subject: Urgent account verification
+"""
+    result = analyze_header(sample_header)
+    return render_template("index.html", result=result, demo_header=sample_header)
 
 # optional root test route
 @app.route("/health")
@@ -36,4 +50,4 @@ def health():
 # --- Start app ---
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port, debug=True)
+    app.run(debug=True, port=5001)
