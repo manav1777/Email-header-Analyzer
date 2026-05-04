@@ -47,7 +47,8 @@ Subject: Urgent account verification
 def health():
     return "Email Header Analyzer is running!"
 
-# --- Start app ---
+# --- Start app --
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    app.run(debug=True, port=5001)
+    app.run(host="0.0.0.0", port=port)
