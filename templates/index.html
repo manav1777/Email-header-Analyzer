@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Email Header Analyzer</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -24,10 +24,20 @@
         h1 {
             text-align: center;
             color: #1e3a8a;
+            font-size: 34px;
+            margin-bottom: 5px;
         }
 
-        form {
-            margin-top: 20px;
+        .subtitle {
+            text-align: center;
+            color: #64748b;
+            font-size: 16px;
+            margin-bottom: 25px;
+        }
+
+        label {
+            font-size: 20px;
+            font-weight: 600;
         }
 
         textarea {
@@ -40,35 +50,41 @@
             border-radius: 5px;
             background: #f8fafc;
             resize: vertical;
-        }
-
-        input[type="submit"] {
-            padding: 12px 25px;
-            font-size: 16px;
-            cursor: pointer;
-            border: none;
-            background: #2563eb;
-            color: #fff;
-            border-radius: 5px;
-            transition: background 0.3s;
             margin-top: 10px;
         }
 
-        input[type="submit"]:hover {
+        .button-row {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .analyze-btn {
+            padding: 12px 25px;
+            font-size: 16px;
+            border: none;
+            background: #2563eb;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .analyze-btn:hover {
             background: #1d4ed8;
         }
 
-        button {
-            padding: 10px 15px;
-            margin-bottom: 10px;
-            cursor: pointer;
+        .demo-btn {
+            padding: 12px 18px;
+            font-size: 16px;
             border: none;
             background: #0f172a;
             color: white;
-            border-radius: 5px;
+            border-radius: 6px;
+            cursor: pointer;
         }
 
-        button:hover {
+        .demo-btn:hover {
             background: #1e293b;
         }
 
@@ -112,23 +128,35 @@
 </head>
 
 <body>
+
 <div class="container">
 
     <h1>Email Header Analyzer</h1>
+    <p class="subtitle">
+        Detect spoofing, phishing, and email authentication issues
+    </p>
 
     <form method="POST">
 
-        <label for="email_header">Paste full email header below:</label><br>
-
-        <button type="button" onclick="loadDemo()">
-            Try Example Email Header
-        </button>
+        <label for="email_header">
+            Paste full email header below:
+        </label>
 
         <textarea name="email_header" id="email_header" required>
 {{ request.form.get('email_header', '') }}
-        </textarea><br>
+        </textarea>
 
-        <input type="submit" value="Analyze Header">
+        <div class="button-row">
+
+            <button type="submit" class="analyze-btn">
+                Analyze Header
+            </button>
+
+            <button type="button" class="demo-btn" onclick="loadDemo()">
+                Try Example
+            </button>
+
+        </div>
 
     </form>
 
@@ -157,15 +185,14 @@
 
 <script>
 function loadDemo() {
-    document.getElementById("email_header").value = `
-From: security-alert@paypal-secure.com
+    document.getElementById("email_header").value =
+`From: security-alert@paypal-secure.com
 Return-Path: hacker@fake-domain.com
 Message-ID: <abc123@phishing.com>
 Received: from unknown (185.143.223.11)
 Subject: Urgent Account Verification Required
 SPF: fail
-DKIM: missing
-`;
+DKIM: missing`;
 }
 </script>
 
