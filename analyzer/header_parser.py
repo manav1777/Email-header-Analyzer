@@ -1,101 +1,136 @@
 import re
-import csv
-import socket
-import os
 
-# Ensure logs folder exists
-LOG_FOLDER = os.path.join(os.getcwd(), "logs")
-if not os.path.exists(LOG_FOLDER):
-    os.makedirs(LOG_FOLDER)
+def extract_field(pattern, text):
+    match = re.search(pattern, text, re.IGNORECASE)
+    return match.group(1).strip() if match else ""
 
-LOG_FILE = os.path.join(LOG_FOLDER, "analyzed_headers.csv")
 
-def analyze_header(header_text):
-    lines = header_text.splitlines()
-    report = {}
+def extract_received_ips(text):
+    # better IP extraction from Received headers
+    ips = re.findall(r"\b(?:\d{1,3}\.){3}\d{1,3}\b", text)
+    return list(set(ips))
 
-    # Extract From, Return-Path, Message-ID
-    report["From"] = extract_field(lines, "From") or ""
-    report["Return-Path"] = extract_field(lines, "Return-Path") or ""
-    report["Message-ID"] = extract_field(lines, "Message-ID") or ""
-    report["Received"] = [line for line in lines if line.startswith("Received:")]
 
-    # Spoof check
-    report["Spoof Suspected"] = report["From"] != report["Return-Path"]
+def extract_auth_results(text, key):
+    """
+    Extracts SPF, DKIM, DMARC from Authentication-Results lines
+    """
+    pattern = rf"{key}=([a-zA-Z]+)"
+    match = re.search(pattern, text, re.IGNORECASE)
+    return match.group(1).upper() if match else "NOT FOUND"
 
-    # SPF check (basic)
-    sending_ip = extract_sending_ip(report["Received"])
-    report["SPF Check"] = check_spf_basic(report["From"], sending_ip) if sending_ip else "No IP found"
 
-    # DKIM check (presence only)
-    report["DKIM"] = check_dkim_basic(header_text)
+def normalize(text):
+    return text.lower().replace(" ", "")
 
-    # Risk label
-    report["Risk Level"] = determine_risk(report)
 
-    # Log result
-    log_result(report)
-    return report
+def check_spf(text):
+    lines = text.lower().splitlines()
 
-# --- Helper functions ---
-
-def extract_field(lines, field_name):
     for line in lines:
-        if line.startswith(field_name + ":"):
-            return line.split(":", 1)[1].strip()
-    return None
+        if "spf" in line:
+            if "pass" in line:
+                return "PASS"
+            if "fail" in line:
+                return "FAIL"
 
-def extract_sending_ip(received_list):
-    if not received_list:
-        return None
-    for line in reversed(received_list):
-        match = re.search(r"\[([0-9\.]+)\]", line)
-        if match:
-            return match.group(1)
-    return None
+    return "NOT FOUND"
 
-def check_spf_basic(from_address, sending_ip):
-    domain = from_address.split("@")[-1]
-    try:
-        answers = socket.getaddrinfo(domain, None)
-        ip_list = [info[4][0] for info in answers]
-        return "SPF Pass" if sending_ip in ip_list else "SPF Fail"
-    except Exception:
-        return "SPF Check Error"
 
-def check_dkim_basic(header_text):
-    for line in header_text.splitlines():
-        if line.startswith("DKIM-Signature:"):
-            match = re.search(r"d=([^;]+);", line)
-            domain = match.group(1) if match else "Unknown"
-            return f"DKIM Present: domain={domain}"
-    return "DKIM Missing"
+def check_dkim(text):
+    lines = text.lower().splitlines()
 
-def determine_risk(report):
-    risk = 0
-    if report["Spoof Suspected"]:
-        risk += 1
-    if report["SPF Check"] == "SPF Fail":
-        risk += 1
-    if "Missing" in report["DKIM"]:
-        risk += 1
+    for line in lines:
+        if "dkim" in line:
+            if "pass" in line:
+                return "PASS"
+            if "fail" in line:
+                return "FAIL"
 
-    if risk == 0:
-        return "Likely Safe"
-    elif risk == 1:
-        return "Suspicious"
-    else:
-        return "High Risk"
+    return "NOT FOUND"
 
-def log_result(report):
-    with open(LOG_FILE, "a", newline="") as f:
-        writer = csv.writer(f)
-        writer.writerow([
-            report.get("From"),
-            report.get("Return-Path"),
-            report.get("Message-ID"),
-            report.get("Spoof Suspected"),
-            report.get("SPF Check"),
-            report.get("DKIM"),
-            report.get("Risk Level")
-        ])
+
+def check_dmarc(text):
+    lines = text.lower().splitlines()
+
+    for line in lines:
+        if "dmarc" in line:
+            if "pass" in line:
+                return "PASS"
+            if "fail" in line:
+                return "FAIL"
+
+    return "NOT FOUND"
+
+
+def detect_spoof(from_field, return_path, received_ips, spf, dkim, dmarc):
+    score = 0
+
+    # missing headers
+    if not from_field:
+        score += 2
+    if not return_path:
+        score += 2
+
+    # auth failures
+    if spf != "PASS":
+        score += 2
+    if dkim != "PASS":
+        score += 2
+    if dmarc != "PASS":
+        score += 1
+
+    # no IPs is suspicious
+    if not received_ips:
+        score += 1
+
+    # mismatch check
+    if from_field and return_path:
+        if "@" in from_field and "@" in return_path:
+            if from_field.split("@")[-1] != return_path.split("@")[-1]:
+                score += 2
+
+    return score
+
+
+def risk_level(score):
+    if score <= 2:
+        return "Low Risk"
+    if score <= 5:
+        return "Medium Risk"
+    return "High Risk"
+
+
+def analyze_header(text):
+
+    from_field = extract_field(r"From:\s*(.*)", text)
+    return_path = extract_field(r"Return-Path:\s*(.*)", text)
+    message_id = extract_field(r"Message-ID:\s*(.*)", text)
+
+    received_ips = extract_received_ips(text)
+
+    spf = check_spf(text)
+    dkim = check_dkim(text)
+    dmarc = check_dmarc(text)
+
+    score = detect_spoof(
+        from_field,
+        return_path,
+        received_ips,
+        spf,
+        dkim,
+        dmarc
+    )
+
+    return {
+        "From": from_field,
+        "Return-Path": return_path,
+        "Message-ID": message_id,
+        "Received IPs": received_ips,
+        "SPF": spf,
+        "DKIM": dkim,
+        "DMARC": dmarc,
+        "Spoof Detected": score >= 5,
+        "Risk Score": score,
+        "Risk Level": risk_level(score)
+    }

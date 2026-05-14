@@ -2,7 +2,6 @@ import os
 import importlib.util
 from flask import Flask, render_template, request
 
-# --- Dynamically load header_parser.py ---
 project_root = os.path.dirname(os.path.abspath(__file__))
 header_parser_path = os.path.join(project_root, "analyzer", "header_parser.py")
 
@@ -12,43 +11,24 @@ spec.loader.exec_module(header_parser)
 
 analyze_header = header_parser.analyze_header
 
-LOG_FOLDER = os.path.join(os.getcwd(), "logs")
-if not os.path.exists(LOG_FOLDER):
-    os.makedirs(LOG_FOLDER)
-
-# --- Flask app ---
 app = Flask(__name__)
 
 @app.route("/", methods=["GET", "POST"])
 def index():
     result = None
-    demo_header = ""
+    input_text = ""
 
     if request.method == "POST":
-        header_text = request.form.get("email_header")
-        if header_text:
-            result = analyze_header(header_text)
+        input_text = request.form.get("emailheader")
+        if input_text:
+            result = analyze_header(input_text)
 
-    return render_template("index.html", result=result, demo_header=demo_header)
+    return render_template("index.html", result=result, input_text=input_text)
 
-@app.route("/demo")
-def demo():
-    sample_header = """
-From: fake@paypal-security.com
-Return-Path: attacker@bad-domain.com
-Received: from unknown (192.168.1.1)
-Subject: Urgent account verification
-"""
-    result = analyze_header(sample_header)
-    return render_template("index.html", result=result, demo_header=sample_header)
-
-# optional root test route
 @app.route("/health")
 def health():
-    return "Email Header Analyzer is running!"
-
-# --- Start app --
+    return "running"
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
+    port = int(os.environ.get("PORT", 5001))
     app.run(host="0.0.0.0", port=port)

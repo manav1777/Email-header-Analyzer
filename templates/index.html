@@ -1,198 +1,192 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Email Header Analyzer</title>
+<meta charset="UTF-8">
+<title>Email Header Analyzer</title>
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #e2e8f0;
-            margin: 0;
-            padding: 0;
-        }
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #e2e8f0;
+    margin: 0;
+    padding: 0;
+}
 
-        .container {
-            max-width: 900px;
-            margin: 50px auto;
-            background: #ffffff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
+.container {
+    max-width: 900px;
+    margin: 50px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
 
-        h1 {
-            text-align: center;
-            color: #1e3a8a;
-            font-size: 34px;
-            margin-bottom: 5px;
-        }
+h1 {
+    text-align: center;
+    color: #1e3a8a;
+    font-size: 34px;
+}
 
-        .subtitle {
-            text-align: center;
-            color: #64748b;
-            font-size: 16px;
-            margin-bottom: 25px;
-        }
+.subtitle {
+    text-align: center;
+    color: #64748b;
+    font-size: 20px;
+    margin-bottom: 25px;
+}
 
-        label {
-            font-size: 20px;
-            font-weight: 600;
-        }
+label {
+    font-size: 22px;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 10px;
+    text-align: left;
+}
 
-        textarea {
-            width: 100%;
-            height: 200px;
-            padding: 15px;
-            font-family: monospace;
-            font-size: 14px;
-            border: 1px solid #cbd5e1;
-            border-radius: 5px;
-            background: #f8fafc;
-            resize: vertical;
-            margin-top: 10px;
-        }
+textarea {
+    width: 100%;
+    height: 200px;
+    margin-top: 10px;
+    padding: 15px;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    border: 1px solid #cbd5e1;
+    border-radius: 5px;
+    background: #f8fafc;
+}
 
-        .button-row {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 15px;
-        }
+.buttonrow {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 15px;
+}
 
-        .analyze-btn {
-            padding: 12px 25px;
-            font-size: 16px;
-            border: none;
-            background: #2563eb;
-            color: white;
-            border-radius: 6px;
-            cursor: pointer;
-        }
+button {
+    padding: 12px 18px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+}
 
-        .analyze-btn:hover {
-            background: #1d4ed8;
-        }
+.analyze {
+    background: #2563eb;
+    color: white;
+}
 
-        .demo-btn {
-            padding: 12px 18px;
-            font-size: 16px;
-            border: none;
-            background: #0f172a;
-            color: white;
-            border-radius: 6px;
-            cursor: pointer;
-        }
+.demo {
+    background: #0f172a;
+    color: white;
+}
 
-        .demo-btn:hover {
-            background: #1e293b;
-        }
+.info {
+    background: #64748b;
+    color: white;
+}
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 25px;
-            background: #f1f5f9;
-        }
+.box {
+    display: none;
+    margin-top: 25px;
+    padding: 20px;
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+}
 
-        th, td {
-            border: 1px solid #cbd5e1;
-            padding: 12px 15px;
-            text-align: left;
-        }
+.resultbox {
+    margin-top: 25px;
+    padding: 20px;
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+}
 
-        th {
-            background: #e2e8f0;
-            color: #1e3a8a;
-        }
+.resultbox p {
+    font-size: 16px;
+    margin: 8px 0;
+    color: #334155;
+}
 
-        .safe {
-            color: green;
-            font-weight: bold;
-        }
-
-        .suspicious {
-            color: orange;
-            font-weight: bold;
-        }
-
-        .high-risk {
-            color: red;
-            font-weight: bold;
-        }
-
-        tr:hover {
-            background-color: #e0f2fe;
-        }
-    </style>
+</style>
 </head>
 
 <body>
 
 <div class="container">
 
-    <h1>Email Header Analyzer</h1>
-    <p class="subtitle">
-        Detect spoofing, phishing, and email authentication issues
-    </p>
+<h1>Email Header Analyzer</h1>
+<p class="subtitle">Detect phishing spoofing and email risks</p>
 
-    <form method="POST">
+<form method="POST">
 
-        <label for="email_header">
-            Paste full email header below:
-        </label>
+<label>Paste full email header below</label>
 
-        <textarea name="email_header" id="email_header" required>
-{{ request.form.get('email_header', '') }}
-        </textarea>
+<textarea name="emailheader" id="emailheader">{{ input_text }}</textarea>
 
-        <div class="button-row">
+<div class="buttonrow">
 
-            <button type="submit" class="analyze-btn">
-                Analyze Header
-            </button>
+<button class="analyze" type="submit">Analyze Header</button>
 
-            <button type="button" class="demo-btn" onclick="loadDemo()">
-                Try Example
-            </button>
+<button class="demo" type="button" onclick="demo()">Try Example</button>
 
-        </div>
+<button class="info" type="button" onclick="toggle()">Project Details</button>
 
-    </form>
+</div>
 
-    {% if result %}
-        <h2>Analysis Result</h2>
+</form>
 
-        <table>
-            <tr><th>Field</th><th>Value</th></tr>
-            <tr><td>From</td><td>{{ result['From'] }}</td></tr>
-            <tr><td>Return-Path</td><td>{{ result['Return-Path'] }}</td></tr>
-            <tr><td>Message-ID</td><td>{{ result['Message-ID'] }}</td></tr>
-            <tr><td>Spoof Suspected</td><td>{{ result['Spoof Suspected'] }}</td></tr>
-            <tr><td>SPF Check</td><td>{{ result['SPF Check'] }}</td></tr>
-            <tr><td>DKIM</td><td>{{ result['DKIM'] }}</td></tr>
+<div id="info" class="box">
 
-            <tr>
-                <td>Risk Level</td>
-                <td class="{% if result['Risk Level'] == 'High Risk' %}high-risk{% elif result['Risk Level'] == 'Suspicious' %}suspicious{% else %}safe{% endif %}">
-                    {{ result['Risk Level'] }}
-                </td>
-            </tr>
-        </table>
-    {% endif %}
+<h2>About This Project</h2>
+
+<p>This tool analyzes email headers to detect phishing spoofing and authentication issues</p>
+
+<h3>Features</h3>
+<p>SPF validation<br>DKIM verification<br>Spoof detection<br>Risk scoring</p>
+
+<h3>Tech Stack</h3>
+<p>Python Flask HTML CSS</p>
+
+</div>
+
+{% if result %}
+<div class="resultbox">
+
+<h2>Result</h2>
+
+<p><b>From:</b> {{ result["From"] }}</p>
+<p><b>Return Path:</b> {{ result["Return-Path"] }}</p>
+<p><b>Message ID:</b> {{ result["Message-ID"] }}</p>
+
+<p><b>Received IPs:</b> {{ result["Received IPs"] }}</p>
+
+<p><b>SPF:</b> {{ result["SPF"] }}</p>
+<p><b>DKIM:</b> {{ result["DKIM"] }}</p>
+<p><b>DMARC:</b> {{ result["DMARC"] }}</p>
+
+<p><b>Spoof Detected:</b> {{ result["Spoof Detected"] }}</p>
+
+<p><b>Risk Score:</b> {{ result["Risk Score"] }}</p>
+<p><b>Risk Level:</b> {{ result["Risk Level"] }}</p>
+
+</div>
+{% endif %}
 
 </div>
 
 <script>
-function loadDemo() {
-    document.getElementById("email_header").value =
-`From: security-alert@paypal-secure.com
-Return-Path: hacker@fake-domain.com
-Message-ID: <abc123@phishing.com>
-Received: from unknown (185.143.223.11)
-Subject: Urgent Account Verification Required
-SPF: fail
-DKIM: missing`;
+function demo() {
+document.getElementById("emailheader").value =
+"From fake paypal security\nReturn Path attacker\nReceived 192.168.1.1\nSubject verify account";
+}
+
+function toggle() {
+var x = document.getElementById("info");
+if (x.style.display === "block") {
+x.style.display = "none";
+} else {
+x.style.display = "block";
+}
 }
 </script>
 

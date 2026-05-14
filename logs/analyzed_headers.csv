@@ -20,3 +20,9 @@ security-alert@paypal-secure.com,hacker@fake-domain.com,<abc123@phishing.com>,Tr
 security-alert@paypal-secure.com,hacker@fake-domain.com,<abc123@phishing.com>,True,No IP found,DKIM Missing,High Risk
 security-alert@paypal-secure.com,hacker@fake-domain.com,<abc123@phishing.com>,True,No IP found,DKIM Missing,High Risk
 security-alert@paypal-secure.com,hacker@fake-domain.com,<abc123@phishing.com>,True,No IP found,DKIM Missing,High Risk
+fake@paypal-security.com,attacker@bad.com,,True,No IP found,DKIM Missing,High Risk
+fake@paypal-security.com,attacker@bad.com,,True,No IP found,DKIM Missing,High Risk
+fake@paypal-security.com,attacker@bad.com,,True,No IP found,DKIM Missing,High Risk
+myTempleHealth Team <myTempleHealthteam@tuhs.temple.edu>,<NoReply-MyTempleHealthTeam@tuhs.temple.edu>,<26abcbee-be93-4ef3-9eca-8227767d9af1@SA2PEPF00003AE6.namprd02.prod.outlook.com>,True,SPF Check Error,DKIM Present: domain=tuhs.temple.edu,Suspicious
+myTempleHealth Team <myTempleHealthteam@tuhs.temple.edu>,<NoReply-MyTempleHealthTeam@tuhs.temple.edu>,<26abcbee-be93-4ef3-9eca-8227767d9af1@SA2PEPF00003AE6.namprd02.prod.outlook.com>,True,SPF Check Error,DKIM Present: domain=tuhs.temple.edu,Suspicious
+myTempleHealth Team <myTempleHealthteam@tuhs.temple.edu>,,,True,No IP found,DKIM Missing,High Risk
