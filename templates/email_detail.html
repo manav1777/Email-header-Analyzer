@@ -1,0 +1,1464 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>{{ email["subject"] or "Email" }} | MailGuard</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f1f5f9;
+    color: #0f172a;
+}
+
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 240px;
+    height: 100vh;
+    background: #0f172a;
+    color: white;
+    padding: 25px 15px;
+    overflow-y: auto;
+}
+
+.logo {
+    font-size: 25px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.nav-item {
+    display: block;
+    padding: 13px 15px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    color: #cbd5e1;
+    text-decoration: none;
+}
+
+.nav-item:hover {
+    background: #1e293b;
+    color: white;
+}
+
+.main {
+    margin-left: 240px;
+    padding: 30px;
+    max-width: 1500px;
+}
+
+.top-navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.back {
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.email-navigation {
+    display: flex;
+    gap: 10px;
+}
+
+.navigation-button {
+    display: inline-block;
+    padding: 10px 16px;
+    border-radius: 8px;
+    background: white;
+    border: 1px solid #cbd5e1;
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.navigation-button:hover {
+    background: #eff6ff;
+}
+
+.navigation-button.disabled {
+    color: #94a3b8;
+    background: #f8fafc;
+}
+
+.email-container {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+.email-header {
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 22px;
+    margin-bottom: 25px;
+}
+
+.email-header h1 {
+    margin: 0 0 12px 0;
+    font-size: 22px;
+    line-height: 1.3;
+    font-weight: 600;
+}
+
+.email-info {
+    color: #475569;
+    line-height: 1.8;
+}
+
+.email-info strong {
+    color: #334155;
+}
+
+.badges {
+    margin-top: 16px;
+}
+
+.badge {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    margin-right: 6px;
+    margin-bottom: 5px;
+}
+
+.badge-high {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.badge-phishing {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.badge-spam {
+    background: #e0e7ff;
+    color: #3730a3;
+}
+
+.badge-category {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.section {
+    margin-top: 30px;
+}
+
+.section h2 {
+    margin-bottom: 15px;
+    font-size: 21px;
+}
+
+.risk-summary {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 22px;
+}
+
+.overall-risk {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 25px;
+    margin-bottom: 20px;
+}
+
+.overall-title {
+    font-size: 13px;
+    color: #64748b;
+    margin-bottom: 3px;
+}
+
+.overall-score {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.overall-level {
+    font-size: 13px;
+    font-weight: 600;
+    padding: 6px 10px;
+    border-radius: 7px;
+    background: #dcfce7;
+    color: #166534;
+}
+
+.risk-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+.risk-card {
+    padding: 12px;
+    border-radius: 8px;
+    background: white;
+    border: 1px solid #e2e8f0;
+}
+
+.risk-card h3 {
+    margin: 0;
+    font-size: 12px;
+    color: #64748b;
+    font-weight: 600;
+}
+
+.risk-score {
+    font-size: 18px;
+    font-weight: 600;
+    margin-top: 5px;
+}
+
+.action-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.action-buttons form {
+    margin: 0;
+}
+
+.action-button {
+    border: none;
+    border-radius: 8px;
+    padding: 11px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.inbox-button {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.spam-button {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.trash-button {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.block-button {
+    background: #e0e7ff;
+    color: #3730a3;
+}
+
+.unsubscribe-button {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.delete-button {
+    background: #991b1b;
+    color: white;
+}
+
+.action-status {
+    padding: 14px 18px;
+    border-radius: 8px;
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    color: #334155;
+    font-weight: 600;
+}
+
+.risk-level-box {
+    padding: 16px 20px;
+    border-radius: 10px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+}
+
+.risk-level-text {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.email-content {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.email-content-header {
+    background: #f8fafc;
+    padding: 14px 18px;
+    border-bottom: 1px solid #e2e8f0;
+    font-weight: 600;
+}
+
+.email-body {
+    padding: 30px;
+    font-size: 16px;
+    line-height: 1.7;
+    color: #0f172a;
+    overflow-wrap: anywhere;
+}
+
+.email-body a {
+    color: #2563eb;
+    text-decoration: none;
+}
+
+.email-body a:hover {
+    text-decoration: underline;
+}
+
+.email-body img {
+    max-width: 100%;
+}
+
+.email-body table {
+    max-width: 100%;
+}
+
+.email-message {
+    max-width: 1000px;
+}
+
+.email-greeting {
+    font-size: 17px;
+    margin-bottom: 18px;
+}
+
+.email-paragraph {
+    margin: 0 0 18px 0;
+}
+
+.email-project {
+    padding: 18px;
+    margin: 15px 0;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+}
+
+.email-project-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #1e3a8a;
+    margin-bottom: 8px;
+}
+
+.email-project-budget {
+    font-weight: 600;
+    margin-bottom: 7px;
+}
+
+.email-project-skills {
+    color: #475569;
+    margin-bottom: 8px;
+}
+
+.email-project-description {
+    color: #334155;
+    margin-bottom: 8px;
+}
+
+.email-project-link {
+    display: inline-block;
+    margin-top: 5px;
+    color: #2563eb;
+    word-break: break-all;
+}
+
+.email-footer {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #e2e8f0;
+    color: #64748b;
+    font-size: 14px;
+}
+
+details {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+summary {
+    cursor: pointer;
+    padding: 17px 20px;
+    font-weight: 700;
+    color: #334155;
+}
+
+summary:hover {
+    background: #eff6ff;
+}
+
+.technical-content {
+    padding: 20px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.technical-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 12px 0;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.technical-row:last-child {
+    border-bottom: none;
+}
+
+.technical-label {
+    font-weight: 600;
+    color: #475569;
+}
+
+.technical-value {
+    text-align: right;
+    word-break: break-word;
+}
+
+.raw-email {
+    margin-top: 20px;
+}
+
+.raw-email-title {
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.raw-email pre {
+    margin: 0;
+    padding: 18px;
+    background: #0f172a;
+    color: #e2e8f0;
+    border-radius: 8px;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+@media (max-width: 1000px) {
+
+    .risk-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+}
+
+@media (max-width: 700px) {
+
+    .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+    }
+
+    .main {
+        margin-left: 0;
+        padding: 20px;
+    }
+
+    .top-navigation {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .email-navigation {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .risk-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .overall-risk {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .technical-row {
+        flex-direction: column;
+    }
+
+    .technical-value {
+        text-align: left;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="sidebar">
+
+<div class="logo">MailGuard</div>
+
+<a href="/" class="nav-item">Analyzer</a>
+<a href="/dashboard" class="nav-item">Dashboard</a>
+<a href="/dashboard?filter=all" class="nav-item">All Emails</a>
+<a href="/dashboard?filter=high_risk" class="nav-item">High Risk</a>
+<a href="/dashboard?filter=phishing" class="nav-item">Phishing</a>
+<a href="/dashboard?filter=spam" class="nav-item">Spam</a>
+<a href="/dashboard?filter=trash" class="nav-item">Trash</a>
+<a href="/dashboard?filter=blocked" class="nav-item">Blocked</a>
+<a href="/dashboard?filter=unsubscribed" class="nav-item">Unsubscribed</a>
+<a href="/connect-gmail" class="nav-item">Connect Gmail</a>
+
+</div>
+
+<div class="main">
+
+<div class="top-navigation">
+
+<a href="/dashboard" class="back">
+← Back to Dashboard
+</a>
+
+<div class="email-navigation">
+
+{% if previous_email %}
+
+<a href="/email/{{ previous_email['id'] }}" class="navigation-button">
+← Previous
+</a>
+
+{% else %}
+
+<span class="navigation-button disabled">
+← Previous
+</span>
+
+{% endif %}
+
+{% if next_email %}
+
+<a href="/email/{{ next_email['id'] }}" class="navigation-button">
+Next →
+</a>
+
+{% else %}
+
+<span class="navigation-button disabled">
+Next →
+</span>
+
+{% endif %}
+
+</div>
+
+</div>
+
+<div class="email-container">
+
+<div class="email-header">
+
+<h1>
+{{ email["subject"] or "No Subject" }}
+</h1>
+
+<div class="email-info">
+
+<strong>From:</strong>
+{{ email["sender"] or "Unknown Sender" }}
+
+<br>
+
+<strong>Category:</strong>
+{{ email["category"] or "Other" }}
+
+<br>
+
+<strong>Analyzed:</strong>
+{{ email["created_at"] or "Unknown" }}
+
+</div>
+
+<div class="badges">
+
+{% if email["high_risk"] %}
+<span class="badge badge-high">High Risk</span>
+{% endif %}
+
+{% if email["phishing"] %}
+<span class="badge badge-phishing">Phishing</span>
+{% endif %}
+
+{% if email["spam"] %}
+<span class="badge badge-spam">Spam</span>
+{% endif %}
+
+<span class="badge badge-category">
+{{ email["category"] or "Other" }}
+</span>
+
+{% if email["action"] == "blocked" %}
+<span class="badge badge-high">Blocked</span>
+{% endif %}
+
+{% if email["action"] == "unsubscribed" %}
+<span class="badge badge-category">Unsubscribed</span>
+{% endif %}
+
+</div>
+
+</div>
+
+
+<div class="section">
+
+<h2>MailGuard Security Analysis</h2>
+
+<div class="risk-summary">
+
+<div class="overall-risk">
+
+<div>
+
+<div class="overall-title">
+Overall Risk
+</div>
+
+<div class="overall-score">
+{{ email["risk_score"] or 0 }}/100
+</div>
+
+</div>
+
+<div class="overall-level">
+{{ email["risk_level"] or "Unknown Risk" }}
+</div>
+
+</div>
+
+<div class="risk-grid">
+
+<div class="risk-card">
+<h3>Header Risk</h3>
+<div class="risk-score">
+{{ email["header_risk"] or 0 }}/100
+</div>
+</div>
+
+<div class="risk-card">
+<h3>URL Risk</h3>
+<div class="risk-score">
+{{ email["url_risk"] or 0 }}/100
+</div>
+</div>
+
+<div class="risk-card">
+<h3>Phishing Risk</h3>
+<div class="risk-score">
+{{ email["phishing_risk"] or 0 }}/100
+</div>
+</div>
+
+<div class="risk-card">
+<h3>Spam Risk</h3>
+<div class="risk-score">
+{{ email["spam_risk"] or 0 }}/100
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="section">
+
+<h2>Actions</h2>
+
+<div class="action-buttons">
+
+{% if email["action"] == "none" or email["action"] == "inbox" %}
+
+<form method="POST" action="/email/{{ email['id'] }}/action/spam">
+<button type="submit" class="action-button spam-button">
+Move to Spam
+</button>
+</form>
+
+<form method="POST" action="/email/{{ email['id'] }}/action/trash">
+<button type="submit" class="action-button trash-button">
+Trash
+</button>
+</form>
+
+<form method="POST" action="/email/{{ email['id'] }}/action/blocked">
+<button type="submit" class="action-button block-button">
+Block Sender
+</button>
+</form>
+
+<form method="POST" action="/email/{{ email['id'] }}/action/unsubscribed">
+<button type="submit" class="action-button unsubscribe-button">
+Unsubscribe
+</button>
+</form>
+
+{% elif email["action"] == "spam" %}
+
+<form method="POST" action="/email/{{ email['id'] }}/action/inbox">
+<button type="submit" class="action-button inbox-button">
+Move to Inbox
+</button>
+</form>
+
+<form method="POST" action="/email/{{ email['id'] }}/action/trash">
+<button type="submit" class="action-button trash-button">
+Move to Trash
+</button>
+</form>
+
+{% elif email["action"] == "trash" %}
+
+<form method="POST" action="/email/{{ email['id'] }}/action/inbox">
+<button type="submit" class="action-button inbox-button">
+Move to Inbox
+</button>
+</form>
+
+<form method="POST" action="/email/{{ email['id'] }}/action/spam">
+<button type="submit" class="action-button spam-button">
+Move to Spam
+</button>
+</form>
+
+<form method="POST"
+      action="/email/{{ email['id'] }}/delete"
+      onsubmit="return confirm('Are you sure you want to permanently delete this email?');">
+
+<button type="submit" class="action-button delete-button">
+Delete Permanently
+</button>
+
+</form>
+
+{% elif email["action"] == "blocked" %}
+
+<div class="action-status">
+This sender is blocked.
+</div>
+
+<form method="POST" action="/email/{{ email['id'] }}/action/inbox">
+<button type="submit" class="action-button inbox-button">
+Move to Inbox
+</button>
+</form>
+
+<form method="POST" action="/email/{{ email['id'] }}/action/trash">
+<button type="submit" class="action-button trash-button">
+Move to Trash
+</button>
+</form>
+
+{% elif email["action"] == "unsubscribed" %}
+
+<div class="action-status">
+You have unsubscribed from this sender.
+</div>
+
+<form method="POST" action="/email/{{ email['id'] }}/action/inbox">
+<button type="submit" class="action-button inbox-button">
+Move to Inbox
+</button>
+</form>
+
+<form method="POST" action="/email/{{ email['id'] }}/action/trash">
+<button type="submit" class="action-button trash-button">
+Move to Trash
+</button>
+</form>
+
+{% endif %}
+
+</div>
+
+</div>
+
+
+<div class="section">
+
+<h2>Risk Level</h2>
+
+<div class="risk-level-box">
+
+<div class="risk-level-text">
+{{ email["risk_level"] or "Unknown" }}
+</div>
+
+</div>
+
+</div>
+
+
+<div class="section">
+
+<h2>Email</h2>
+
+<div class="email-content">
+
+<div class="email-content-header">
+Message
+</div>
+
+<div class="email-body">
+
+<div
+    id="cleanEmailBody"
+    class="email-message"
+>
+Loading message...
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="section">
+
+<h2>Technical Details</h2>
+
+<details>
+
+<summary>
+Show Technical Details
+</summary>
+
+<div class="technical-content">
+
+<div class="technical-row">
+<div class="technical-label">Sender</div>
+<div class="technical-value">
+{{ email["sender"] or "Unknown" }}
+</div>
+</div>
+
+<div class="technical-row">
+<div class="technical-label">Category</div>
+<div class="technical-value">
+{{ email["category"] or "Other" }}
+</div>
+</div>
+
+<div class="technical-row">
+<div class="technical-label">Overall Risk</div>
+<div class="technical-value">
+{{ email["risk_score"] or 0 }}/100
+</div>
+</div>
+
+<div class="technical-row">
+<div class="technical-label">Header Risk</div>
+<div class="technical-value">
+{{ email["header_risk"] or 0 }}/100
+</div>
+</div>
+
+<div class="technical-row">
+<div class="technical-label">URL Risk</div>
+<div class="technical-value">
+{{ email["url_risk"] or 0 }}/100
+</div>
+</div>
+
+<div class="technical-row">
+<div class="technical-label">Phishing Risk</div>
+<div class="technical-value">
+{{ email["phishing_risk"] or 0 }}/100
+</div>
+</div>
+
+<div class="technical-row">
+<div class="technical-label">Spam Risk</div>
+<div class="technical-value">
+{{ email["spam_risk"] or 0 }}/100
+</div>
+</div>
+
+<div class="raw-email">
+
+<div class="raw-email-title">
+Raw Email Data
+</div>
+
+<pre id="rawEmail">{{ email["body"] }}</pre>
+
+</div>
+
+</div>
+
+</details>
+
+</div>
+
+</div>
+
+</div>
+
+
+<script>
+
+function escapeHtml(text) {
+
+    const div = document.createElement("div");
+
+    div.textContent = text;
+
+    return div.innerHTML;
+
+}
+
+
+function linkify(text) {
+
+    const escaped = escapeHtml(text);
+
+    return escaped.replace(
+        /(https?:\/\/[^\s<]+)/g,
+        function(url) {
+
+            let cleanUrl = url;
+
+            let ending = "";
+
+            while (
+                /[.,!?)]$/.test(cleanUrl)
+            ) {
+
+                ending =
+                    cleanUrl.slice(-1) +
+                    ending;
+
+                cleanUrl =
+                    cleanUrl.slice(0, -1);
+
+            }
+
+            return (
+                '<a href="' +
+                cleanUrl +
+                '" target="_blank" rel="noopener noreferrer">' +
+                cleanUrl +
+                "</a>" +
+                ending
+            );
+
+        }
+    );
+
+}
+
+
+function cleanRawEmail(raw) {
+
+    if (!raw) {
+        return "";
+    }
+
+    let text = raw;
+
+    text = text.replace(
+        /\r\n/g,
+        "\n"
+    );
+
+    text = text.replace(
+        /\r/g,
+        "\n"
+    );
+
+    text = text.replace(
+        /^Content-Type:.*$/gmi,
+        ""
+    );
+
+    text = text.replace(
+        /^Content-Transfer-Encoding:.*$/gmi,
+        ""
+    );
+
+    text = text.replace(
+        /^Content-Disposition:.*$/gmi,
+        ""
+    );
+
+    text = text.replace(
+        /^MIME-Version:.*$/gmi,
+        ""
+    );
+
+    text = text.replace(
+        /^--[A-Za-z0-9_=.\-]+$/gm,
+        ""
+    );
+
+    text = text.replace(
+        /^={5,}$/gm,
+        ""
+    );
+
+    text = text.replace(
+        /\n{3,}/g,
+        "\n\n"
+    );
+
+    return text.trim();
+
+}
+
+
+function createFreelancerEmail(raw) {
+
+    let text = cleanRawEmail(raw);
+
+    if (!text) {
+        return "<p>No email content available.</p>";
+    }
+
+
+    /*
+        Remove the tracking URL at the very beginning.
+    */
+
+    text = text.replace(
+        /^\s*\(https?:\/\/[^)]+\)\s*/i,
+        ""
+    );
+
+
+    /*
+        Remove the View More section.
+    */
+
+    text = text.replace(
+        /\nView more jobs matching your skills at:[\s\S]*$/i,
+        ""
+    );
+
+
+    /*
+        Separate the footer.
+    */
+
+    let footer = "";
+
+    const regardsIndex =
+        text.search(
+            /\nRegards,\s*\n/i
+        );
+
+    if (regardsIndex !== -1) {
+
+        footer =
+            text.substring(
+                regardsIndex
+            );
+
+        text =
+            text.substring(
+                0,
+                regardsIndex
+            );
+
+    }
+
+
+    /*
+        Split the message into lines.
+    */
+
+    const lines =
+        text.split("\n").map(
+            line => line.trim()
+        );
+
+
+    let html = "";
+
+    let i = 0;
+
+
+    while (i < lines.length) {
+
+        const line = lines[i];
+
+
+        if (!line) {
+
+            i++;
+            continue;
+
+        }
+
+
+        /*
+            Greeting.
+        */
+
+        if (
+            /^Hi\s+/i.test(line) ||
+            /^Hello\s+/i.test(line)
+        ) {
+
+            html +=
+                '<div class="email-greeting">' +
+                linkify(line) +
+                "</div>";
+
+            i++;
+            continue;
+
+        }
+
+
+        /*
+            Project heading.
+        */
+
+        const nextLine =
+            lines[i + 1] || "";
+
+        const afterNext =
+            lines[i + 2] || "";
+
+        if (
+            line.length > 3 &&
+            line.length < 100 &&
+            /^Budget:/i.test(nextLine)
+        ) {
+
+            html +=
+                '<div class="email-project">' +
+
+                '<div class="email-project-title">' +
+                escapeHtml(line) +
+                "</div>" +
+
+                '<div class="email-project-budget">' +
+                linkify(nextLine) +
+                "</div>";
+
+            if (
+                /^Skills:/i.test(afterNext)
+            ) {
+
+                html +=
+                    '<div class="email-project-skills">' +
+                    linkify(afterNext) +
+                    "</div>";
+
+                i += 3;
+
+            } else {
+
+                i += 2;
+
+            }
+
+
+            /*
+                Description.
+            */
+
+            if (
+                /^Description:/i.test(
+                    lines[i] || ""
+                )
+            ) {
+
+                html +=
+                    '<div class="email-project-description">' +
+                    linkify(lines[i]) +
+                    "</div>";
+
+                i++;
+
+            }
+
+
+            /*
+                Project URL.
+            */
+
+            if (
+                lines[i] &&
+                (
+                    lines[i].startsWith("/projects/") ||
+                    lines[i].startsWith("https://")
+                )
+            ) {
+
+                let projectUrl =
+                    lines[i];
+
+                if (
+                    projectUrl.startsWith("/")
+                ) {
+
+                    projectUrl =
+                        "https://www.freelancer.com" +
+                        projectUrl;
+
+                }
+
+                html +=
+                    '<a class="email-project-link" href="' +
+                    escapeHtml(projectUrl) +
+                    '" target="_blank" rel="noopener noreferrer">' +
+                    escapeHtml(projectUrl) +
+                    "</a>";
+
+                i++;
+
+            }
+
+            html += "</div>";
+
+            continue;
+
+        }
+
+
+        /*
+            Projects heading.
+        */
+
+        if (
+            /^Projects$/i.test(line)
+        ) {
+
+            html +=
+                "<h3>Projects</h3>";
+
+            i++;
+
+            continue;
+
+        }
+
+
+        /*
+            Normal paragraph.
+        */
+
+        let paragraph =
+            line;
+
+        i++;
+
+        while (
+            i < lines.length &&
+            lines[i] &&
+            !/^Budget:/i.test(lines[i]) &&
+            !/^Projects$/i.test(lines[i]) &&
+            !/^Regards,/i.test(lines[i]) &&
+            !/^Hi\s+/i.test(lines[i])
+        ) {
+
+            paragraph +=
+                " " +
+                lines[i];
+
+            i++;
+
+        }
+
+        html +=
+            '<p class="email-paragraph">' +
+            linkify(paragraph) +
+            "</p>";
+
+    }
+
+
+    /*
+        Footer.
+    */
+
+    if (footer) {
+
+        html +=
+            '<div class="email-footer">' +
+            linkify(
+                footer
+                    .replace(
+                        /\n{2,}/g,
+                        "\n"
+                    )
+            ).replace(
+                /\n/g,
+                "<br>"
+            ) +
+            "</div>";
+
+    }
+
+
+    return html;
+
+}
+
+
+function createReadableEmail(raw) {
+
+    if (!raw) {
+        return "<p>No email content available.</p>";
+    }
+
+    const lower =
+        raw.toLowerCase();
+
+
+    /*
+        If the email contains actual HTML,
+        safely remove scripts and iframes.
+    */
+
+    if (
+        lower.includes("<html") ||
+        lower.includes("<!doctype")
+    ) {
+
+        let html = raw;
+
+        html =
+            html.replace(
+                /<script[\s\S]*?<\/script>/gi,
+                ""
+            );
+
+        html =
+            html.replace(
+                /<iframe[\s\S]*?<\/iframe>/gi,
+                ""
+            );
+
+        html =
+            html.replace(
+                /<object[\s\S]*?<\/object>/gi,
+                ""
+            );
+
+        html =
+            html.replace(
+                /<embed[\s\S]*?>/gi,
+                ""
+            );
+
+        return html;
+
+    }
+
+
+    /*
+        Detect the Freelancer email format.
+    */
+
+    if (
+        lower.includes("projects") &&
+        lower.includes("budget:") &&
+        lower.includes("skills:")
+    ) {
+
+        return createFreelancerEmail(
+            raw
+        );
+
+    }
+
+
+    /*
+        Generic plain text email.
+    */
+
+    const cleaned =
+        cleanRawEmail(raw);
+
+    return (
+        "<div>" +
+        linkify(cleaned)
+            .replace(
+                /\n\n/g,
+                "</p><p>"
+            )
+            .replace(
+                /\n/g,
+                "<br>"
+            ) +
+        "</div>"
+    );
+
+}
+
+
+const rawEmailElement =
+    document.getElementById(
+        "rawEmail"
+    );
+
+const cleanEmailElement =
+    document.getElementById(
+        "cleanEmailBody"
+    );
+
+
+if (
+    rawEmailElement &&
+    cleanEmailElement
+) {
+
+    const rawEmail =
+        rawEmailElement.textContent || "";
+
+    cleanEmailElement.innerHTML =
+        createReadableEmail(
+            rawEmail
+        );
+
+}
+
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>MailGuard Dashboard</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f1f5f9;
+    color: #0f172a;
+}
+
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 240px;
+    height: 100vh;
+    background: #0f172a;
+    color: white;
+    padding: 25px 15px;
+    overflow-y: auto;
+}
+
+.logo {
+    font-size: 25px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.nav-item {
+    display: block;
+    padding: 13px 15px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    color: #cbd5e1;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.nav-item:hover {
+    background: #1e293b;
+    color: white;
+}
+
+.nav-item.active {
+    background: #2563eb;
+    color: white;
+}
+
+.main {
+    margin-left: 240px;
+    padding: 30px;
+}
+
+.page-title {
+    font-size: 30px;
+    font-weight: bold;
+    margin-bottom: 25px;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+.stat-title {
+    font-size: 14px;
+    color: #64748b;
+    margin-bottom: 8px;
+}
+
+.stat-number {
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.email-section {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.section-header h2 {
+    margin: 0;
+    font-size: 22px;
+}
+
+.bulk-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+}
+
+.select-area {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    color: #334155;
+}
+
+.select-area input {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.bulk-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.bulk-button {
+    border: none;
+    border-radius: 7px;
+    padding: 10px 14px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.bulk-button:hover:not(:disabled) {
+    opacity: 0.85;
+    transform: translateY(-1px);
+}
+
+.bulk-button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.bulk-button.inbox {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.bulk-button.spam {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.bulk-button.trash {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.bulk-button.blocked {
+    background: #e0e7ff;
+    color: #3730a3;
+}
+
+.bulk-button.unsubscribe {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.bulk-button.delete {
+    background: #991b1b;
+    color: white;
+}
+
+.selected-count {
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 600;
+    margin-left: auto;
+}
+
+.email-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.email-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 18px;
+    transition: 0.2s;
+}
+
+.email-card:hover {
+    background: #eff6ff;
+    border-color: #93c5fd;
+}
+
+.email-selection {
+    padding-top: 3px;
+    flex-shrink: 0;
+}
+
+.email-select {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.email-content {
+    flex: 1;
+    min-width: 0;
+    text-decoration: none;
+    color: inherit;
+}
+
+.email-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.email-subject {
+    font-size: 18px;
+    font-weight: bold;
+    color: #0f172a;
+}
+
+.email-content:hover .email-subject {
+    color: #2563eb;
+}
+
+.email-sender {
+    margin-top: 7px;
+    font-size: 15px;
+    color: #475569;
+}
+
+.email-category {
+    margin-top: 7px;
+    font-size: 14px;
+    color: #64748b;
+}
+
+.email-risk {
+    font-size: 16px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.badges {
+    margin-top: 12px;
+}
+
+.badge {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    margin-right: 6px;
+    margin-bottom: 5px;
+}
+
+.badge-high {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.badge-phishing {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.badge-spam {
+    background: #e0e7ff;
+    color: #3730a3;
+}
+
+.badge-category {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.empty {
+    text-align: center;
+    padding: 50px 20px;
+    color: #64748b;
+    font-size: 17px;
+}
+
+@media (max-width: 1000px) {
+
+    .stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+}
+
+@media (max-width: 800px) {
+
+    .bulk-toolbar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .bulk-actions {
+        width: 100%;
+    }
+
+    .selected-count {
+        margin-left: 0;
+    }
+
+}
+
+@media (max-width: 650px) {
+
+    .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+    }
+
+    .main {
+        margin-left: 0;
+        padding: 20px;
+    }
+
+    .stats {
+        grid-template-columns: 1fr;
+    }
+
+    .email-top {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="sidebar">
+
+<div class="logo">
+MailGuard
+</div>
+
+<a
+    href="/"
+    class="nav-item"
+>
+Analyzer
+</a>
+
+<a
+    href="/dashboard"
+    class="nav-item"
+>
+Dashboard
+</a>
+
+<a
+    href="/dashboard?filter=all"
+    class="nav-item {% if filter_type == 'all' %}active{% endif %}"
+>
+All Emails
+</a>
+
+<a
+    href="/dashboard?filter=high_risk"
+    class="nav-item {% if filter_type == 'high_risk' %}active{% endif %}"
+>
+High Risk
+</a>
+
+<a
+    href="/dashboard?filter=phishing"
+    class="nav-item {% if filter_type == 'phishing' %}active{% endif %}"
+>
+Phishing
+</a>
+
+<a
+    href="/dashboard?filter=spam"
+    class="nav-item {% if filter_type == 'spam' %}active{% endif %}"
+>
+Spam
+</a>
+
+<a
+    href="/dashboard?filter=trash"
+    class="nav-item {% if filter_type == 'trash' %}active{% endif %}"
+>
+Trash
+</a>
+
+<a
+    href="/dashboard?filter=blocked"
+    class="nav-item {% if filter_type == 'blocked' %}active{% endif %}"
+>
+Blocked
+</a>
+
+<a
+    href="/dashboard?filter=unsubscribed"
+    class="nav-item {% if filter_type == 'unsubscribed' %}active{% endif %}"
+>
+Unsubscribed
+</a>
+
+<a
+    href="/connect-gmail"
+    class="nav-item"
+>
+Connect Gmail
+</a>
+
+</div>
+
+<div class="main">
+
+<div class="page-title">
+
+{% if filter_type == "all" %}
+
+All Emails
+
+{% elif filter_type == "high_risk" %}
+
+High Risk Emails
+
+{% elif filter_type == "phishing" %}
+
+Phishing Emails
+
+{% elif filter_type == "spam" %}
+
+Spam Emails
+
+{% elif filter_type == "trash" %}
+
+Trash
+
+{% elif filter_type == "blocked" %}
+
+Blocked Senders
+
+{% elif filter_type == "unsubscribed" %}
+
+Unsubscribed Senders
+
+{% else %}
+
+Emails
+
+{% endif %}
+
+</div>
+
+<div class="stats">
+
+<div class="stat-card">
+
+<div class="stat-title">
+Inbox Emails
+</div>
+
+<div class="stat-number">
+{{ stats["all_emails"] }}
+</div>
+
+</div>
+
+<div class="stat-card">
+
+<div class="stat-title">
+High Risk
+</div>
+
+<div class="stat-number">
+{{ stats["high_risk"] }}
+</div>
+
+</div>
+
+<div class="stat-card">
+
+<div class="stat-title">
+Phishing
+</div>
+
+<div class="stat-number">
+{{ stats["phishing"] }}
+</div>
+
+</div>
+
+<div class="stat-card">
+
+<div class="stat-title">
+Spam
+</div>
+
+<div class="stat-number">
+{{ stats["spam"] }}
+</div>
+
+</div>
+
+</div>
+
+<div class="email-section">
+
+<div class="section-header">
+
+<h2>
+
+{% if filter_type == "blocked" %}
+
+Blocked Emails
+
+{% elif filter_type == "unsubscribed" %}
+
+Unsubscribed Emails
+
+{% elif filter_type == "trash" %}
+
+Trash
+
+{% elif filter_type == "spam" %}
+
+Spam
+
+{% elif filter_type == "high_risk" %}
+
+High Risk Emails
+
+{% elif filter_type == "phishing" %}
+
+Phishing Emails
+
+{% else %}
+
+Emails
+
+{% endif %}
+
+</h2>
+
+</div>
+
+{% if emails %}
+
+<form
+    method="POST"
+    action="/dashboard/bulk-action"
+    id="bulkForm"
+>
+
+<input
+    type="hidden"
+    name="filter_type"
+    value="{{ filter_type }}"
+>
+
+<div class="bulk-toolbar">
+
+<div class="select-area">
+
+<input
+    type="checkbox"
+    id="selectAll"
+>
+
+<label for="selectAll">
+Select All
+</label>
+
+</div>
+
+<div class="bulk-actions">
+
+{% if filter_type == "trash" %}
+
+<button
+    type="submit"
+    name="action"
+    value="inbox"
+    class="bulk-button inbox"
+    disabled
+>
+Move to Inbox
+</button>
+
+<button
+    type="submit"
+    name="action"
+    value="spam"
+    class="bulk-button spam"
+    disabled
+>
+Move to Spam
+</button>
+
+<button
+    type="submit"
+    name="action"
+    value="delete"
+    class="bulk-button delete"
+    disabled
+>
+Delete Permanently
+</button>
+
+{% elif filter_type == "spam" %}
+
+<button
+    type="submit"
+    name="action"
+    value="inbox"
+    class="bulk-button inbox"
+    disabled
+>
+Move to Inbox
+</button>
+
+<button
+    type="submit"
+    name="action"
+    value="trash"
+    class="bulk-button trash"
+    disabled
+>
+Move to Trash
+</button>
+
+{% elif filter_type == "blocked" %}
+
+<button
+    type="submit"
+    name="action"
+    value="inbox"
+    class="bulk-button inbox"
+    disabled
+>
+Move to Inbox
+</button>
+
+<button
+    type="submit"
+    name="action"
+    value="trash"
+    class="bulk-button trash"
+    disabled
+>
+Move to Trash
+</button>
+
+{% elif filter_type == "unsubscribed" %}
+
+<button
+    type="submit"
+    name="action"
+    value="inbox"
+    class="bulk-button inbox"
+    disabled
+>
+Move to Inbox
+</button>
+
+<button
+    type="submit"
+    name="action"
+    value="trash"
+    class="bulk-button trash"
+    disabled
+>
+Move to Trash
+</button>
+
+{% else %}
+
+<button
+    type="submit"
+    name="action"
+    value="spam"
+    class="bulk-button spam"
+    disabled
+>
+Move to Spam
+</button>
+
+<button
+    type="submit"
+    name="action"
+    value="trash"
+    class="bulk-button trash"
+    disabled
+>
+Move to Trash
+</button>
+
+<button
+    type="submit"
+    name="action"
+    value="blocked"
+    class="bulk-button blocked"
+    disabled
+>
+Block Sender
+</button>
+
+<button
+    type="submit"
+    name="action"
+    value="unsubscribed"
+    class="bulk-button unsubscribe"
+    disabled
+>
+Unsubscribe
+</button>
+
+{% endif %}
+
+</div>
+
+<div
+    class="selected-count"
+    id="selectedCount"
+>
+0 selected
+</div>
+
+</div>
+
+<div class="email-list">
+
+{% for email in emails %}
+
+<div class="email-card">
+
+<div class="email-selection">
+
+<input
+    type="checkbox"
+    name="email_ids"
+    value="{{ email['id'] }}"
+    class="email-select"
+>
+    
+</div>
+
+<a
+    href="/email/{{ email['id'] }}"
+    class="email-content"
+>
+
+<div class="email-top">
+
+<div>
+
+<div class="email-subject">
+{{ email["subject"] or "No Subject" }}
+</div>
+
+<div class="email-sender">
+{{ email["sender"] or "Unknown" }}
+</div>
+
+<div class="email-category">
+Category:
+{{ email["category"] or "Other" }}
+</div>
+
+</div>
+
+<div class="email-risk">
+{{ email["risk_score"] or 0 }}/100
+</div>
+
+</div>
+
+<div class="badges">
+
+{% if email["high_risk"] %}
+
+<span class="badge badge-high">
+High Risk
+</span>
+
+{% endif %}
+
+{% if email["phishing"] %}
+
+<span class="badge badge-phishing">
+Phishing
+</span>
+
+{% endif %}
+
+{% if email["spam"] %}
+
+<span class="badge badge-spam">
+Spam
+</span>
+
+{% endif %}
+
+<span class="badge badge-category">
+{{ email["category"] or "Other" }}
+</span>
+
+{% if email["action"] == "blocked" %}
+
+<span class="badge badge-high">
+Blocked
+</span>
+
+{% endif %}
+
+{% if email["action"] == "unsubscribed" %}
+
+<span class="badge badge-category">
+Unsubscribed
+</span>
+
+{% endif %}
+
+</div>
+
+</a>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+</form>
+
+{% else %}
+
+<div class="empty">
+No emails found in this section.
+</div>
+
+{% endif %}
+
+</div>
+
+</div>
+
+<script>
+
+const selectAll =
+    document.getElementById("selectAll");
+
+const emailCheckboxes =
+    document.querySelectorAll(".email-select");
+
+const actionButtons =
+    document.querySelectorAll(".bulk-button");
+
+const selectedCount =
+    document.getElementById("selectedCount");
+
+
+function updateSelection() {
+
+    const selected =
+        document.querySelectorAll(
+            ".email-select:checked"
+        );
+
+    const count =
+        selected.length;
+
+    if (selectedCount) {
+
+        selectedCount.textContent =
+            count +
+            (
+                count === 1
+                    ? " selected"
+                    : " selected"
+            );
+
+    }
+
+    actionButtons.forEach(
+        function(button) {
+
+            button.disabled =
+                count === 0;
+
+        }
+    );
+
+    if (
+        selectAll &&
+        emailCheckboxes.length > 0
+    ) {
+
+        selectAll.checked =
+            count === emailCheckboxes.length;
+
+        selectAll.indeterminate =
+            count > 0 &&
+            count < emailCheckboxes.length;
+
+    }
+
+}
+
+
+if (selectAll) {
+
+    selectAll.addEventListener(
+        "change",
+        function() {
+
+            emailCheckboxes.forEach(
+                function(checkbox) {
+
+                    checkbox.checked =
+                        selectAll.checked;
+
+                }
+            );
+
+            updateSelection();
+
+        }
+    );
+
+}
+
+
+emailCheckboxes.forEach(
+    function(checkbox) {
+
+        checkbox.addEventListener(
+            "change",
+            updateSelection
+        );
+
+    }
+);
+
+
+document
+    .getElementById("bulkForm")
+    ?.addEventListener(
+        "submit",
+        function(event) {
+
+            const selected =
+                document.querySelectorAll(
+                    ".email-select:checked"
+                ).length;
+
+            if (selected === 0) {
+
+                event.preventDefault();
+
+                return;
+
+            }
+
+            const clickedButton =
+                document.activeElement;
+
+            if (
+                clickedButton &&
+                clickedButton.value === "delete"
+            ) {
+
+                const confirmed =
+                    confirm(
+                        "Are you sure you want to permanently delete " +
+                        selected +
+                        " email(s)?"
+                    );
+
+                if (!confirmed) {
+
+                    event.preventDefault();
+
+                }
+
+            }
+
+        }
+    );
+
+
+updateSelection();
+
+</script>
+
+</body>
+
+</html>

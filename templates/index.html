@@ -1,55 +1,159 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
-<title>Email Header Analyzer</title>
+
+<title>MailGuard Analyzer</title>
 
 <style>
+
+* {
+    box-sizing: border-box;
+}
+
 body {
-    font-family: 'Roboto', Arial, sans-serif;
-    background: linear-gradient(to right, #1c92d2, #f2fcfe);
     margin: 0;
-    padding: 0;
+    font-family: Arial, sans-serif;
+    background: #f1f5f9;
     color: #0f172a;
 }
 
-.container {
-    max-width: 900px;
-    margin: 40px auto;
-    background: white;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+
+/* Sidebar */
+
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 240px;
+    height: 100vh;
+    background: #0f172a;
+    color: white;
+    padding: 25px 15px;
+    overflow-y: auto;
 }
+
+.logo {
+    font-size: 25px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.nav-item {
+    display: block;
+    padding: 13px 15px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    color: #cbd5e1;
+    text-decoration: none;
+}
+
+.nav-item:hover {
+    background: #1e293b;
+    color: white;
+}
+
+.nav-item.active {
+    background: #2563eb;
+    color: white;
+}
+
+
+/* Main */
+
+.main {
+    margin-left: 240px;
+    padding: 30px;
+    min-height: 100vh;
+}
+
+
+/* Top Navigation */
+
+.top-navigation {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+}
+
+.dashboard-button {
+    display: inline-block;
+    padding: 11px 18px;
+    border-radius: 8px;
+    background: white;
+    border: 1px solid #cbd5e1;
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.dashboard-button:hover {
+    background: #eff6ff;
+    border-color: #2563eb;
+}
+
+
+/* Main Container */
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    background: white;
+    padding: 35px;
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+}
+
+
+/* Header */
 
 h1 {
     text-align: center;
     color: #0b3d91;
     font-size: 34px;
+    margin-top: 0;
 }
 
 .subtitle {
     text-align: center;
     color: #334155;
     font-size: 18px;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
 }
+
+
+/* Textarea */
 
 textarea {
     width: 100%;
-    height: 200px;
-    padding: 12px;
+    height: 220px;
+    padding: 14px;
     border-radius: 10px;
     border: 1px solid #cbd5e1;
     font-size: 14px;
     margin-top: 10px;
+    resize: vertical;
+    font-family: Arial, sans-serif;
 }
+
+textarea:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+
+/* Buttons */
 
 .button-row {
     display: flex;
     justify-content: center;
     gap: 15px;
     margin-top: 20px;
+    flex-wrap: wrap;
 }
 
 button {
@@ -76,10 +180,13 @@ button:hover {
     background: #1f2937;
 }
 
+
+/* Result Card */
+
 .card {
     margin-top: 25px;
     padding: 20px;
-    background: #f1f5f9;
+    background: #f8fafc;
     border-radius: 10px;
     border: 1px solid #cbd5e1;
     text-align: left;
@@ -91,8 +198,88 @@ button:hover {
 
 .card h3 {
     color: #334155;
-    margin-top: 15px;
+    margin-top: 20px;
 }
+
+
+/* Result Information */
+
+.result-item {
+    margin: 10px 0;
+    line-height: 1.6;
+}
+
+.result-label {
+    font-weight: bold;
+    color: #334155;
+}
+
+
+/* Risk Section */
+
+.risk-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.risk-card {
+    padding: 18px;
+    border-radius: 10px;
+    background: white;
+    border: 1px solid #e2e8f0;
+}
+
+.risk-card h3 {
+    margin: 0;
+    font-size: 14px;
+    color: #64748b;
+}
+
+.risk-score {
+    font-size: 27px;
+    font-weight: bold;
+    margin-top: 8px;
+    color: #0f172a;
+}
+
+
+/* Findings */
+
+.findings {
+    margin-top: 15px;
+    padding: 15px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.findings ul {
+    margin-bottom: 0;
+}
+
+.findings li {
+    margin-bottom: 8px;
+}
+
+
+/* URL Cards */
+
+.url-card {
+    margin-top: 15px;
+    padding: 18px;
+    background: white;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+}
+
+.url-card p {
+    word-break: break-word;
+}
+
+
+/* Information Section */
 
 #info p {
     font-size: 17px;
@@ -107,90 +294,613 @@ button:hover {
     font-size: 21px;
 }
 
+
+/* Divider */
+
+hr {
+    border: none;
+    border-top: 1px solid #cbd5e1;
+    margin: 30px 0;
+}
+
+
+/* Mobile */
+
+@media (max-width: 900px) {
+
+    .risk-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+}
+
+@media (max-width: 650px) {
+
+    .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+    }
+
+    .main {
+        margin-left: 0;
+        padding: 20px;
+    }
+
+    .container {
+        padding: 20px;
+    }
+
+    .top-navigation {
+        justify-content: center;
+    }
+
+    .risk-grid {
+        grid-template-columns: 1fr;
+    }
+
+}
+
 </style>
+
 </head>
 
 <body>
 
-<div class="container">
 
-<h1>Email Header Analyzer</h1>
+<!-- Sidebar -->
 
-<p class="subtitle">
-Detect phishing spoofing and email risks
-</p>
+<div class="sidebar">
 
-<form method="POST">
+    <div class="logo">
+        MailGuard
+    </div>
 
-<textarea name="emailheader" id="emailheader">{{ input_text }}</textarea>
 
-<div class="button-row">
+    <a href="/" class="nav-item active">
+        Analyzer
+    </a>
 
-<button type="submit">Analyze Header</button>
 
-<button type="button" class="secondary-btn" onclick="demo()">Try Example</button>
+    <a href="/dashboard" class="nav-item">
+        Dashboard
+    </a>
 
-<button type="button" class="secondary-btn" onclick="toggle()">Details</button>
+
+    <a href="/dashboard?filter=all" class="nav-item">
+        All Emails
+    </a>
+
+
+    <a href="/dashboard?filter=high_risk" class="nav-item">
+        High Risk
+    </a>
+
+
+    <a href="/dashboard?filter=phishing" class="nav-item">
+        Phishing
+    </a>
+
+
+    <a href="/dashboard?filter=spam" class="nav-item">
+        Spam
+    </a>
+
+
+    <a href="/dashboard?filter=trash" class="nav-item">
+        Trash
+    </a>
+
+
+    <a href="/dashboard?filter=blocked" class="nav-item">
+        Blocked
+    </a>
+
+
+    <a href="/dashboard?filter=unsubscribed" class="nav-item">
+        Unsubscribed
+    </a>
+
+
+    <a href="/connect-gmail" class="nav-item">
+        Connect Gmail
+    </a>
+</div>
+
+
+<!-- Main -->
+
+<div class="main">
+
+
+    <!-- Dashboard Button -->
+
+    <div class="top-navigation">
+
+        <a
+            href="/dashboard"
+            class="dashboard-button"
+        >
+            Back to Dashboard
+        </a>
+
+    </div>
+
+
+    <!-- Analyzer -->
+
+    <div class="container">
+
+        <h1>
+            Email Header Analyzer
+        </h1>
+
+
+        <p class="subtitle">
+            Detect phishing, spoofing, spam, and email security risks
+        </p>
+
+
+        <form method="POST">
+
+
+            <textarea
+                name="emailheader"
+                id="emailheader"
+                placeholder="Paste your complete email header here..."
+            >{{ input_text }}</textarea>
+
+
+            <div class="button-row">
+
+                <button type="submit">
+                    Analyze Header
+                </button>
+
+
+                <button
+                    type="button"
+                    class="secondary-btn"
+                    onclick="demo()"
+                >
+                    Try Example
+                </button>
+
+
+                <button
+                    type="button"
+                    class="secondary-btn"
+                    onclick="toggle()"
+                >
+                    Details
+                </button>
+
+            </div>
+
+        </form>
+
+
+        {% if result %}
+
+        <div class="card">
+
+            <h2>
+                Email Analysis Result
+            </h2>
+
+
+            <p class="result-item">
+                <span class="result-label">From:</span>
+                {{ result["From"] }}
+            </p>
+
+
+            <p class="result-item">
+                <span class="result-label">Return Path:</span>
+                {{ result["Return-Path"] }}
+            </p>
+
+
+            <p class="result-item">
+                <span class="result-label">Message ID:</span>
+                {{ result["Message-ID"] }}
+            </p>
+
+
+            <p class="result-item">
+                <span class="result-label">Received IPs:</span>
+                {{ result["Received IPs"] }}
+            </p>
+
+
+            <p class="result-item">
+                <span class="result-label">SPF:</span>
+                {{ result["SPF"] }}
+            </p>
+
+
+            <p class="result-item">
+                <span class="result-label">DKIM:</span>
+                {{ result["DKIM"] }}
+            </p>
+
+
+            <p class="result-item">
+                <span class="result-label">DMARC:</span>
+                {{ result["DMARC"] }}
+            </p>
+
+
+            <p class="result-item">
+                <span class="result-label">Spoof Detected:</span>
+                {{ result["Spoof Detected"] }}
+            </p>
+
+
+            <p class="result-item">
+                <span class="result-label">Header Risk Score:</span>
+                {{ result["Risk Score"] }}
+            </p>
+
+
+            <p class="result-item">
+                <span class="result-label">Header Risk Level:</span>
+                {{ result["Risk Level"] }}
+            </p>
+
+
+            <hr>
+
+
+            <h2>
+                MailGuard Security Analysis
+            </h2>
+
+
+            <div class="risk-grid">
+
+
+                <div class="risk-card">
+
+                    <h3>
+                        Overall Risk
+                    </h3>
+
+                    <div class="risk-score">
+                        {{ result["MailGuard Risk"]["risk_score"] }}/100
+                    </div>
+
+                </div>
+
+
+                <div class="risk-card">
+
+                    <h3>
+                        Header Risk
+                    </h3>
+
+                    <div class="risk-score">
+                        {{ result["MailGuard Risk"]["header_risk"] }}/100
+                    </div>
+
+                </div>
+
+
+                <div class="risk-card">
+
+                    <h3>
+                        URL Risk
+                    </h3>
+
+                    <div class="risk-score">
+                        {{ result["MailGuard Risk"]["url_risk"] }}/100
+                    </div>
+
+                </div>
+
+
+                <div class="risk-card">
+
+                    <h3>
+                        Phishing Risk
+                    </h3>
+
+                    <div class="risk-score">
+                        {{ result["MailGuard Risk"]["phishing_risk"] }}/100
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="findings">
+
+                <p>
+                    <b>Overall Risk Level:</b>
+                    {{ result["MailGuard Risk"]["risk_level"] }}
+                </p>
+
+            </div>
+
+
+            <h3>
+                Phishing Detection
+            </h3>
+
+
+            <div class="findings">
+
+                <p>
+                    <b>Phishing Score:</b>
+                    {{ result["Phishing Results"]["phishing_score"] }}/100
+                </p>
+
+
+                <p>
+                    <b>Phishing Level:</b>
+                    {{ result["Phishing Results"]["phishing_level"] }}
+                </p>
+
+
+                {% if result["Phishing Results"]["findings"] %}
+
+                <p>
+                    <b>Phishing Findings:</b>
+                </p>
+
+
+                <ul>
+
+                    {% for finding in result["Phishing Results"]["findings"] %}
+
+                    <li>
+                        {{ finding }}
+                    </li>
+
+                    {% endfor %}
+
+                </ul>
+
+
+                {% else %}
+
+                <p>
+                    No major phishing indicators detected.
+                </p>
+
+                {% endif %}
+
+            </div>
+
+
+            <h3>
+                Spam Detection
+            </h3>
+
+
+            <div class="findings">
+
+                {% if result["Spam Results"] %}
+
+                <p>
+                    <b>Spam Score:</b>
+                    {{ result["Spam Results"].get("spam_score", result["Spam Results"].get("score", 0)) }}/100
+                </p>
+
+                <p>
+                    <b>Spam Level:</b>
+                    {{ result["Spam Results"].get("spam_level", result["Spam Results"].get("level", "Unknown")) }}
+                </p>
+
+                {% else %}
+
+                <p>
+                    No spam analysis results available.
+                </p>
+
+                {% endif %}
+
+            </div>
+
+
+            <h3>
+                Email Category
+            </h3>
+
+
+            <div class="findings">
+
+                <p>
+                    <b>Category:</b>
+                    {{ result["Category"].get("category", result["Category"].get("Category", "Other")) }}
+                </p>
+
+            </div>
+
+
+            <h3>
+                URL Analysis
+            </h3>
+
+
+            {% if result["URL Results"] %}
+
+
+                {% for url in result["URL Results"] %}
+
+                <div class="url-card">
+
+                    <p>
+                        <b>URL:</b>
+                        {{ url["url"] }}
+                    </p>
+
+
+                    <p>
+                        <b>Risk Score:</b>
+                        {{ url["risk_score"] }}/100
+                    </p>
+
+
+                    {% if url["findings"] %}
+
+                    <p>
+                        <b>Findings:</b>
+                    </p>
+
+
+                    <ul>
+
+                        {% for finding in url["findings"] %}
+
+                        <li>
+                            {{ finding }}
+                        </li>
+
+                        {% endfor %}
+
+                    </ul>
+
+
+                    {% else %}
+
+                    <p>
+                        No suspicious URL indicators detected.
+                    </p>
+
+                    {% endif %}
+
+                </div>
+
+                {% endfor %}
+
+
+            {% else %}
+
+            <div class="findings">
+
+                <p>
+                    No URLs were detected in this email.
+                </p>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+        {% endif %}
+
+
+        <!-- Details -->
+
+        <div
+            id="info"
+            class="card"
+            style="display:none;"
+        >
+
+            <h2>
+                About MailGuard
+            </h2>
+
+
+            <p>
+                MailGuard analyzes email headers and email content to identify phishing, spoofing, spam, suspicious URLs, and other security risks.
+            </p>
+
+
+            <h3>
+                Security Features
+            </h3>
+
+
+            <p>
+                SPF validation
+                <br>
+                DKIM analysis
+                <br>
+                DMARC analysis
+                <br>
+                Spoof detection
+                <br>
+                Phishing detection
+                <br>
+                Spam detection
+                <br>
+                URL security analysis
+                <br>
+                Risk scoring
+                <br>
+                Email categorization
+            </p>
+
+
+            <h3>
+                Tech Stack
+            </h3>
+
+
+            <p>
+                Python
+                <br>
+                Flask
+                <br>
+                SQLite
+                <br>
+                HTML
+                <br>
+                CSS
+            </p>
+
+        </div>
+
+    </div>
 
 </div>
 
-</form>
-
-{% if result %}
-<div class="card">
-
-<h2>Result</h2>
-
-<p><b>From:</b> {{ result["From"] }}</p>
-<p><b>Return Path:</b> {{ result["Return-Path"] }}</p>
-<p><b>Message ID:</b> {{ result["Message-ID"] }}</p>
-<p><b>Received IPs:</b> {{ result["Received IPs"] }}</p>
-<p><b>SPF:</b> {{ result["SPF"] }}</p>
-<p><b>DKIM:</b> {{ result["DKIM"] }}</p>
-<p><b>DMARC:</b> {{ result["DMARC"] }}</p>
-<p><b>Spoof Detected:</b> {{ result["Spoof Detected"] }}</p>
-<p><b>Risk Score:</b> {{ result["Risk Score"] }}</p>
-<p><b>Risk Level:</b> {{ result["Risk Level"] }}</p>
-
-</div>
-{% endif %}
-
-<div id="info" class="card" style="display:none;">
-
-<h2>About This Tool</h2>
-
-<p>
-This tool analyzes email headers to detect phishing spoofing and authentication issues.
-</p>
-
-<h3>Features</h3>
-<p>
-SPF validation<br>
-DKIM verification<br>
-Spoof detection<br>
-Risk scoring
-</p>
-
-<h3>Tech Stack</h3>
-<p>
-Python Flask HTML CSS
-</p>
-
-</div>
-
-</div>
 
 <script>
+
 function demo() {
+
     document.getElementById("emailheader").value =
-        "From fake paypal security\nReturn Path attacker\nReceived 192.168.1.1\nSubject verify account";
+        "From: security@example.com\n" +
+        "Return-Path: attacker@different-domain.com\n" +
+        "Received: from mail.example.com (192.168.1.50)\n" +
+        "Authentication-Results: spf=fail dkim=fail dmarc=fail\n" +
+        "Message-ID: <12345@example.com>\n" +
+        "Subject: Urgent account verification\n\n" +
+        "Hello,\n\n" +
+        "Your account requires immediate verification.\n\n" +
+        "Please visit:\n" +
+        "http://192.168.1.50/login/account/verify\n\n" +
+        "Thank you.";
+
 }
+
 
 function toggle() {
+
     var box = document.getElementById("info");
-    box.style.display = (box.style.display === "block") ? "none" : "block";
+
+    if (box.style.display === "block") {
+
+        box.style.display = "none";
+
+    } else {
+
+        box.style.display = "block";
+
+    }
+
 }
+
 </script>
 
+
 </body>
+
 </html>
