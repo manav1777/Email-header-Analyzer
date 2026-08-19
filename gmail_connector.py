@@ -10,42 +10,53 @@ GMAIL_IMAP_PORT = 993
 
 
 def decode_text(value):
-
     if not value:
         return ""
 
     decoded_parts = decode_header(value)
-
     result = ""
 
     for part, encoding in decoded_parts:
-
         if isinstance(part, bytes):
-
             try:
-
                 result += part.decode(
                     encoding or "utf8",
                     errors="replace"
                 )
-
             except Exception:
-
                 result += part.decode(
                     "utf8",
                     errors="replace"
                 )
-
         else:
-
             result += part
 
     return result
 
 
-def get_email_body(message):
+def decode_payload(part):
+    payload = part.get_payload(decode=True)
 
-    body = ""
+    if not payload:
+        return ""
+
+    charset = part.get_content_charset() or "utf8"
+
+    try:
+        return payload.decode(
+            charset,
+            errors="replace"
+        )
+    except Exception:
+        return payload.decode(
+            "utf8",
+            errors="replace"
+        )
+
+
+def get_email_bodies(message):
+    plain_text = ""
+    html_text = ""
 
     if message.is_multipart():
 
@@ -53,75 +64,60 @@ def get_email_body(message):
 
             content_type = part.get_content_type()
 
-            content_disposition = str(
-                part.get("Content-Disposition") or ""
+            content_disposition = (
+                str(
+                    part.get(
+                        "Content-Disposition"
+                    ) or ""
+                ).lower()
             )
 
-            if (
-                content_type == "text/plain"
-                and "attachment" not in content_disposition.lower()
-            ):
+            if "attachment" in content_disposition:
+                continue
 
-                payload = part.get_payload(
-                    decode=True
-                )
+            if content_type == "text/plain":
 
-                if payload:
+                text = decode_payload(part)
 
-                    charset = (
-                        part.get_content_charset()
-                        or "utf8"
-                    )
+                if text.strip() and not plain_text:
+                    plain_text = text
 
-                    try:
+            elif content_type == "text/html":
 
-                        body = payload.decode(
-                            charset,
-                            errors="replace"
-                        )
+                html = decode_payload(part)
 
-                    except Exception:
-
-                        body = payload.decode(
-                            "utf8",
-                            errors="replace"
-                        )
-
-                    if body.strip():
-                        break
+                if html.strip() and not html_text:
+                    html_text = html
 
     else:
 
-        payload = message.get_payload(
-            decode=True
-        )
+        content_type = message.get_content_type()
 
-        if payload:
+        text = decode_payload(message)
 
-            charset = (
-                message.get_content_charset()
-                or "utf8"
-            )
+        if content_type == "text/html":
+            html_text = text
+        else:
+            plain_text = text
 
-            try:
+    return plain_text, html_text
 
-                body = payload.decode(
-                    charset,
-                    errors="replace"
-                )
 
-            except Exception:
+def get_email_body(message):
+    plain_text, html_text = get_email_bodies(
+        message
+    )
 
-                body = payload.decode(
-                    "utf8",
-                    errors="replace"
-                )
+    if plain_text.strip():
+        return plain_text
 
-    return body
+    if html_text.strip():
+        return html_text
+
+    return ""
 
 
 def get_received_at(message):
-
     date_value = message.get(
         "Date",
         ""
@@ -131,7 +127,6 @@ def get_received_at(message):
         return ""
 
     try:
-
         parsed_date = parsedate_to_datetime(
             date_value
         )
@@ -139,12 +134,10 @@ def get_received_at(message):
         return parsed_date.isoformat()
 
     except Exception:
-
         return date_value
 
 
 def get_flags(data):
-
     flags = set()
 
     if not data:
@@ -152,38 +145,39 @@ def get_flags(data):
 
     for item in data:
 
-        if isinstance(item, tuple):
+        if not isinstance(item, tuple):
+            continue
 
-            header = item[0]
+        header = item[0]
 
-            if isinstance(header, bytes):
-                header = header.decode(
-                    "utf8",
-                    errors="replace"
-                )
+        if isinstance(header, bytes):
+            header = header.decode(
+                "utf8",
+                errors="replace"
+            )
 
-            if "FLAGS" in header:
+        if "FLAGS" not in header:
+            continue
 
-                start = header.find("(")
-                end = header.find(")")
+        start = header.find("(")
+        end = header.find(")")
 
-                if start >= 0 and end > start:
+        if start < 0 or end <= start:
+            continue
 
-                    flag_text = header[
-                        start + 1:end
-                    ]
+        flag_text = header[
+            start + 1:end
+        ]
 
-                    for flag in flag_text.split():
-
-                        flags.add(
-                            flag.strip()
-                        )
+        for flag in flag_text.split():
+            flags.add(
+                flag.strip()
+            )
 
     return flags
 
 
 def get_raw_email(data):
-
     if not data:
         return None
 
@@ -201,17 +195,31 @@ def get_raw_email(data):
             )
 
         if "RFC822" in header:
-
             return item[1]
 
     return None
+
+
+def get_message_headers(message):
+    headers = []
+
+    for key, value in message.items():
+
+        decoded_value = decode_text(
+            value
+        )
+
+        headers.append(
+            f"{key}: {decoded_value}"
+        )
+
+    return "\n".join(headers)
 
 
 def connect_gmail(
     email_address,
     app_password
 ):
-
     mail = imaplib.IMAP4_SSL(
         GMAIL_IMAP_SERVER,
         GMAIL_IMAP_PORT
@@ -245,7 +253,6 @@ def fetch_emails(
         )
 
         if status != "OK":
-
             return {
                 "emails": [],
                 "current_uids": []
@@ -258,7 +265,6 @@ def fetch_emails(
         )
 
         if status != "OK":
-
             return {
                 "emails": [],
                 "current_uids": []
@@ -271,18 +277,17 @@ def fetch_emails(
         for uid in raw_uids:
 
             try:
-
                 uid_text = uid.decode(
                     "ascii"
                 )
-
             except Exception:
-
                 uid_text = str(uid)
 
             uids.append(
                 uid_text
             )
+
+        current_uids = list(uids)
 
         uids.reverse()
 
@@ -293,14 +298,12 @@ def fetch_emails(
                 limit = int(limit)
 
                 if limit > 0:
-
                     uids = uids[:limit]
 
             except (
                 TypeError,
                 ValueError
             ):
-
                 pass
 
         results = []
@@ -314,7 +317,6 @@ def fetch_emails(
             )
 
             if status != "OK":
-
                 continue
 
             raw_email = get_raw_email(
@@ -324,9 +326,16 @@ def fetch_emails(
             if not raw_email:
                 continue
 
-            message = email.message_from_bytes(
-                raw_email
-            )
+            try:
+
+                message = (
+                    email.message_from_bytes(
+                        raw_email
+                    )
+                )
+
+            except Exception:
+                continue
 
             sender = decode_text(
                 message.get(
@@ -342,9 +351,16 @@ def fetch_emails(
                 )
             )
 
-            body = get_email_body(
-                message
+            plain_body, html_body = (
+                get_email_bodies(
+                    message
+                )
             )
+
+            body = plain_body
+
+            if not body.strip():
+                body = html_body
 
             received_at = get_received_at(
                 message
@@ -352,7 +368,7 @@ def fetch_emails(
 
             message_id = decode_text(
                 message.get(
-                    "Message ID",
+                    "Message-ID",
                     ""
                 )
             )
@@ -365,38 +381,43 @@ def fetch_emails(
                 "\\Seen" in flags
             )
 
-            headers = ""
-
-            for key, value in message.items():
-
-                headers += (
-                    f"{key}: {value}\n"
-                )
-
-            headers += "\n"
-            headers += body
+            headers = get_message_headers(
+                message
+            )
 
             results.append(
                 {
                     "gmail_uid": str(uid),
                     "gmail_account": email_address,
                     "gmail_mailbox": mailbox,
+
                     "sender": sender,
                     "subject": subject,
+
                     "body": body,
+                    "plain_body": plain_body,
+                    "html_body": html_body,
+
                     "headers": headers,
+
+                    "raw_email": (
+                        raw_email.decode(
+                            "utf8",
+                            errors="replace"
+                        )
+                    ),
+
                     "received_at": received_at,
+
                     "message_id": message_id,
+
                     "is_read": is_read
                 }
             )
 
         return {
             "emails": results,
-            "current_uids": [
-                str(uid)
-                for uid in raw_uids
-            ]
+            "current_uids": current_uids
         }
 
     finally:

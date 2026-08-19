@@ -103,7 +103,7 @@ body {
     background: white;
     padding: 30px;
     border-radius: 12px;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
 }
 
 .email-header {
@@ -334,6 +334,7 @@ body {
 
 .email-body img {
     max-width: 100%;
+    height: auto;
 }
 
 .email-body table {
@@ -465,6 +466,10 @@ summary:hover {
     line-height: 1.5;
 }
 
+.email-data {
+    display: none;
+}
+
 @media (max-width: 1000px) {
 
     .risk-grid {
@@ -524,20 +529,52 @@ summary:hover {
 
 <div class="sidebar">
 
-<div class="logo">MailGuard</div>
+<div class="logo">
+MailGuard
+</div>
 
-<a href="/" class="nav-item">Analyzer</a>
-<a href="/dashboard" class="nav-item">Dashboard</a>
-<a href="/dashboard?filter=all" class="nav-item">All Emails</a>
-<a href="/dashboard?filter=high_risk" class="nav-item">High Risk</a>
-<a href="/dashboard?filter=phishing" class="nav-item">Phishing</a>
-<a href="/dashboard?filter=spam" class="nav-item">Spam</a>
-<a href="/dashboard?filter=trash" class="nav-item">Trash</a>
-<a href="/dashboard?filter=blocked" class="nav-item">Blocked</a>
-<a href="/dashboard?filter=unsubscribed" class="nav-item">Unsubscribed</a>
-<a href="/connect-gmail" class="nav-item">Connect Gmail</a>
+<a href="/" class="nav-item">
+Analyzer
+</a>
+
+<a href="/dashboard" class="nav-item">
+Dashboard
+</a>
+
+<a href="/dashboard?filter=all" class="nav-item">
+All Emails
+</a>
+
+<a href="/dashboard?filter=high_risk" class="nav-item">
+High Risk
+</a>
+
+<a href="/dashboard?filter=phishing" class="nav-item">
+Phishing
+</a>
+
+<a href="/dashboard?filter=spam" class="nav-item">
+Spam
+</a>
+
+<a href="/dashboard?filter=trash" class="nav-item">
+Trash
+</a>
+
+<a href="/dashboard?filter=blocked" class="nav-item">
+Blocked
+</a>
+
+<a href="/dashboard?filter=unsubscribed" class="nav-item">
+Unsubscribed
+</a>
+
+<a href="/connect-gmail" class="nav-item">
+Connect Gmail
+</a>
 
 </div>
+
 
 <div class="main">
 
@@ -551,7 +588,10 @@ summary:hover {
 
 {% if previous_email %}
 
-<a href="/email/{{ previous_email['id'] }}" class="navigation-button">
+<a
+    href="/email/{{ previous_email['id'] }}"
+    class="navigation-button"
+>
 ← Previous
 </a>
 
@@ -562,10 +602,14 @@ summary:hover {
 </span>
 
 {% endif %}
+
 
 {% if next_email %}
 
-<a href="/email/{{ next_email['id'] }}" class="navigation-button">
+<a
+    href="/email/{{ next_email['id'] }}"
+    class="navigation-button"
+>
 Next →
 </a>
 
@@ -581,7 +625,9 @@ Next →
 
 </div>
 
+
 <div class="email-container">
+
 
 <div class="email-header">
 
@@ -606,30 +652,56 @@ Next →
 
 </div>
 
+
 <div class="badges">
 
 {% if email["high_risk"] %}
-<span class="badge badge-high">High Risk</span>
+
+<span class="badge badge-high">
+High Risk
+</span>
+
 {% endif %}
+
 
 {% if email["phishing"] %}
-<span class="badge badge-phishing">Phishing</span>
+
+<span class="badge badge-phishing">
+Phishing
+</span>
+
 {% endif %}
 
+
 {% if email["spam"] %}
-<span class="badge badge-spam">Spam</span>
+
+<span class="badge badge-spam">
+Spam
+</span>
+
 {% endif %}
+
 
 <span class="badge badge-category">
 {{ email["category"] or "Other" }}
 </span>
 
+
 {% if email["action"] == "blocked" %}
-<span class="badge badge-high">Blocked</span>
+
+<span class="badge badge-high">
+Blocked
+</span>
+
 {% endif %}
 
+
 {% if email["action"] == "unsubscribed" %}
-<span class="badge badge-category">Unsubscribed</span>
+
+<span class="badge badge-category">
+Unsubscribed
+</span>
+
 {% endif %}
 
 </div>
@@ -639,7 +711,9 @@ Next →
 
 <div class="section">
 
-<h2>MailGuard Security Analysis</h2>
+<h2>
+MailGuard Security Analysis
+</h2>
 
 <div class="risk-summary">
 
@@ -663,34 +737,58 @@ Overall Risk
 
 </div>
 
+
 <div class="risk-grid">
 
 <div class="risk-card">
-<h3>Header Risk</h3>
+
+<h3>
+Header Risk
+</h3>
+
 <div class="risk-score">
 {{ email["header_risk"] or 0 }}/100
 </div>
+
 </div>
 
+
 <div class="risk-card">
-<h3>URL Risk</h3>
+
+<h3>
+URL Risk
+</h3>
+
 <div class="risk-score">
 {{ email["url_risk"] or 0 }}/100
 </div>
+
 </div>
 
+
 <div class="risk-card">
-<h3>Phishing Risk</h3>
+
+<h3>
+Phishing Risk
+</h3>
+
 <div class="risk-score">
 {{ email["phishing_risk"] or 0 }}/100
 </div>
+
 </div>
 
+
 <div class="risk-card">
-<h3>Spam Risk</h3>
+
+<h3>
+Spam Risk
+</h3>
+
 <div class="risk-score">
 {{ email["spam_risk"] or 0 }}/100
 </div>
+
 </div>
 
 </div>
@@ -702,109 +800,233 @@ Overall Risk
 
 <div class="section">
 
-<h2>Actions</h2>
+<h2>
+Actions
+</h2>
 
 <div class="action-buttons">
 
+
 {% if email["action"] == "none" or email["action"] == "inbox" %}
 
-<form method="POST" action="/email/{{ email['id'] }}/action/spam">
-<button type="submit" class="action-button spam-button">
+
+<form
+    method="POST"
+    action="/email/{{ email['id'] }}/action/spam"
+>
+
+<button
+    type="submit"
+    class="action-button spam-button"
+>
 Move to Spam
 </button>
+
 </form>
 
-<form method="POST" action="/email/{{ email['id'] }}/action/trash">
-<button type="submit" class="action-button trash-button">
+
+<form
+    method="POST"
+    action="/email/{{ email['id'] }}/action/trash"
+>
+
+<button
+    type="submit"
+    class="action-button trash-button"
+>
 Trash
 </button>
+
 </form>
 
-<form method="POST" action="/email/{{ email['id'] }}/action/blocked">
-<button type="submit" class="action-button block-button">
+
+<form
+    method="POST"
+    action="/email/{{ email['id'] }}/action/blocked"
+>
+
+<button
+    type="submit"
+    class="action-button block-button"
+>
 Block Sender
 </button>
+
 </form>
 
-<form method="POST" action="/email/{{ email['id'] }}/action/unsubscribed">
-<button type="submit" class="action-button unsubscribe-button">
+
+<form
+    method="POST"
+    action="/email/{{ email['id'] }}/unsubscribe"
+>
+
+<button
+    type="submit"
+    class="action-button unsubscribe-button"
+>
 Unsubscribe
 </button>
+
 </form>
+
 
 {% elif email["action"] == "spam" %}
 
-<form method="POST" action="/email/{{ email['id'] }}/action/inbox">
-<button type="submit" class="action-button inbox-button">
+
+<form
+    method="POST"
+    action="/email/{{ email['id'] }}/action/inbox"
+>
+
+<button
+    type="submit"
+    class="action-button inbox-button"
+>
 Move to Inbox
 </button>
+
 </form>
 
-<form method="POST" action="/email/{{ email['id'] }}/action/trash">
-<button type="submit" class="action-button trash-button">
+
+<form
+    method="POST"
+    action="/email/{{ email['id'] }}/action/trash"
+>
+
+<button
+    type="submit"
+    class="action-button trash-button"
+>
 Move to Trash
 </button>
+
 </form>
+
 
 {% elif email["action"] == "trash" %}
 
-<form method="POST" action="/email/{{ email['id'] }}/action/inbox">
-<button type="submit" class="action-button inbox-button">
+
+<form
+    method="POST"
+    action="/email/{{ email['id'] }}/action/inbox"
+>
+
+<button
+    type="submit"
+    class="action-button inbox-button"
+>
 Move to Inbox
 </button>
+
 </form>
 
-<form method="POST" action="/email/{{ email['id'] }}/action/spam">
-<button type="submit" class="action-button spam-button">
+
+<form
+    method="POST"
+    action="/email/{{ email['id'] }}/action/spam"
+>
+
+<button
+    type="submit"
+    class="action-button spam-button"
+>
 Move to Spam
 </button>
+
 </form>
 
-<form method="POST"
-      action="/email/{{ email['id'] }}/delete"
-      onsubmit="return confirm('Are you sure you want to permanently delete this email?');">
 
-<button type="submit" class="action-button delete-button">
+<form
+    method="POST"
+    action="/email/{{ email['id'] }}/delete"
+    onsubmit="return confirm('Are you sure you want to permanently delete this email?');"
+>
+
+<button
+    type="submit"
+    class="action-button delete-button"
+>
 Delete Permanently
 </button>
 
 </form>
 
+
 {% elif email["action"] == "blocked" %}
+
 
 <div class="action-status">
 This sender is blocked.
 </div>
 
-<form method="POST" action="/email/{{ email['id'] }}/action/inbox">
-<button type="submit" class="action-button inbox-button">
+
+<form
+    method="POST"
+    action="/email/{{ email['id'] }}/action/inbox"
+>
+
+<button
+    type="submit"
+    class="action-button inbox-button"
+>
 Move to Inbox
 </button>
+
 </form>
 
-<form method="POST" action="/email/{{ email['id'] }}/action/trash">
-<button type="submit" class="action-button trash-button">
+
+<form
+    method="POST"
+    action="/email/{{ email['id'] }}/action/trash"
+>
+
+<button
+    type="submit"
+    class="action-button trash-button"
+>
 Move to Trash
 </button>
+
 </form>
 
+
 {% elif email["action"] == "unsubscribed" %}
+
 
 <div class="action-status">
 You have unsubscribed from this sender.
 </div>
 
-<form method="POST" action="/email/{{ email['id'] }}/action/inbox">
-<button type="submit" class="action-button inbox-button">
+
+<form
+    method="POST"
+    action="/email/{{ email['id'] }}/action/inbox"
+>
+
+<button
+    type="submit"
+    class="action-button inbox-button"
+>
 Move to Inbox
 </button>
+
 </form>
 
-<form method="POST" action="/email/{{ email['id'] }}/action/trash">
-<button type="submit" class="action-button trash-button">
+
+<form
+    method="POST"
+    action="/email/{{ email['id'] }}/action/trash"
+>
+
+<button
+    type="submit"
+    class="action-button trash-button"
+>
 Move to Trash
 </button>
+
 </form>
+
 
 {% endif %}
 
@@ -815,7 +1037,9 @@ Move to Trash
 
 <div class="section">
 
-<h2>Risk Level</h2>
+<h2>
+Risk Level
+</h2>
 
 <div class="risk-level-box">
 
@@ -830,7 +1054,9 @@ Move to Trash
 
 <div class="section">
 
-<h2>Email</h2>
+<h2>
+Email
+</h2>
 
 <div class="email-content">
 
@@ -856,7 +1082,9 @@ Loading message...
 
 <div class="section">
 
-<h2>Technical Details</h2>
+<h2>
+Technical Details
+</h2>
 
 <details>
 
@@ -866,54 +1094,97 @@ Show Technical Details
 
 <div class="technical-content">
 
+
 <div class="technical-row">
-<div class="technical-label">Sender</div>
+
+<div class="technical-label">
+Sender
+</div>
+
 <div class="technical-value">
 {{ email["sender"] or "Unknown" }}
 </div>
+
 </div>
 
+
 <div class="technical-row">
-<div class="technical-label">Category</div>
+
+<div class="technical-label">
+Category
+</div>
+
 <div class="technical-value">
 {{ email["category"] or "Other" }}
 </div>
+
 </div>
 
+
 <div class="technical-row">
-<div class="technical-label">Overall Risk</div>
+
+<div class="technical-label">
+Overall Risk
+</div>
+
 <div class="technical-value">
 {{ email["risk_score"] or 0 }}/100
 </div>
+
 </div>
 
+
 <div class="technical-row">
-<div class="technical-label">Header Risk</div>
+
+<div class="technical-label">
+Header Risk
+</div>
+
 <div class="technical-value">
 {{ email["header_risk"] or 0 }}/100
 </div>
+
 </div>
 
+
 <div class="technical-row">
-<div class="technical-label">URL Risk</div>
+
+<div class="technical-label">
+URL Risk
+</div>
+
 <div class="technical-value">
 {{ email["url_risk"] or 0 }}/100
 </div>
+
 </div>
 
+
 <div class="technical-row">
-<div class="technical-label">Phishing Risk</div>
+
+<div class="technical-label">
+Phishing Risk
+</div>
+
 <div class="technical-value">
 {{ email["phishing_risk"] or 0 }}/100
 </div>
+
 </div>
 
+
 <div class="technical-row">
-<div class="technical-label">Spam Risk</div>
+
+<div class="technical-label">
+Spam Risk
+</div>
+
 <div class="technical-value">
 {{ email["spam_risk"] or 0 }}/100
 </div>
+
 </div>
+
 
 <div class="raw-email">
 
@@ -921,9 +1192,10 @@ Show Technical Details
 Raw Email Data
 </div>
 
-<pre id="rawEmail">{{ email["body"] }}</pre>
+<pre id="rawEmail">{{ email["raw_email"] or email["body"] }}</pre>
 
 </div>
+
 
 </div>
 
@@ -931,34 +1203,41 @@ Raw Email Data
 
 </div>
 
+
 </div>
 
 </div>
+
+
+<script id="emailBodyData" type="application/json">
+{{ email["body"] | tojson | safe }}
+</script>
 
 
 <script>
 
 function escapeHtml(text) {
 
-    const div = document.createElement("div");
+    const div =
+        document.createElement("div");
 
-    div.textContent = text;
+    div.textContent =
+        text || "";
 
     return div.innerHTML;
-
 }
 
 
 function linkify(text) {
 
-    const escaped = escapeHtml(text);
+    const escaped =
+        escapeHtml(text);
 
     return escaped.replace(
         /(https?:\/\/[^\s<]+)/g,
         function(url) {
 
             let cleanUrl = url;
-
             let ending = "";
 
             while (
@@ -971,7 +1250,6 @@ function linkify(text) {
 
                 cleanUrl =
                     cleanUrl.slice(0, -1);
-
             }
 
             return (
@@ -979,13 +1257,10 @@ function linkify(text) {
                 cleanUrl +
                 '" target="_blank" rel="noopener noreferrer">' +
                 cleanUrl +
-                "</a>" +
-                ending
-            );
-
+                "</a>"
+            ) + ending;
         }
     );
-
 }
 
 
@@ -995,90 +1270,81 @@ function cleanRawEmail(raw) {
         return "";
     }
 
-    let text = raw;
+    let text =
+        String(raw);
 
-    text = text.replace(
-        /\r\n/g,
-        "\n"
-    );
+    text =
+        text.replace(
+            /\r\n/g,
+            "\n"
+        );
 
-    text = text.replace(
-        /\r/g,
-        "\n"
-    );
+    text =
+        text.replace(
+            /\r/g,
+            "\n"
+        );
 
-    text = text.replace(
-        /^Content-Type:.*$/gmi,
-        ""
-    );
+    text =
+        text.replace(
+            /^Content-Type:.*$/gmi,
+            ""
+        );
 
-    text = text.replace(
-        /^Content-Transfer-Encoding:.*$/gmi,
-        ""
-    );
+    text =
+        text.replace(
+            /^Content-Transfer-Encoding:.*$/gmi,
+            ""
+        );
 
-    text = text.replace(
-        /^Content-Disposition:.*$/gmi,
-        ""
-    );
+    text =
+        text.replace(
+            /^Content-Disposition:.*$/gmi,
+            ""
+        );
 
-    text = text.replace(
-        /^MIME-Version:.*$/gmi,
-        ""
-    );
+    text =
+        text.replace(
+            /^MIME-Version:.*$/gmi,
+            ""
+        );
 
-    text = text.replace(
-        /^--[A-Za-z0-9_=.\-]+$/gm,
-        ""
-    );
+    text =
+        text.replace(
+            /^--[A-Za-z0-9_=.\-]+$/gm,
+            ""
+        );
 
-    text = text.replace(
-        /^={5,}$/gm,
-        ""
-    );
-
-    text = text.replace(
-        /\n{3,}/g,
-        "\n\n"
-    );
+    text =
+        text.replace(
+            /\n{3,}/g,
+            "\n\n"
+        );
 
     return text.trim();
-
 }
 
 
 function createFreelancerEmail(raw) {
 
-    let text = cleanRawEmail(raw);
+    let text =
+        cleanRawEmail(raw);
 
     if (!text) {
         return "<p>No email content available.</p>";
     }
 
+    text =
+        text.replace(
+            /^\s*\(https?:\/\/[^)]+\)\s*/i,
+            ""
+        );
 
-    /*
-        Remove the tracking URL at the very beginning.
-    */
-
-    text = text.replace(
-        /^\s*\(https?:\/\/[^)]+\)\s*/i,
-        ""
-    );
-
-
-    /*
-        Remove the View More section.
-    */
-
-    text = text.replace(
-        /\nView more jobs matching your skills at:[\s\S]*$/i,
-        ""
-    );
-
-
-    /*
-        Separate the footer.
-    */
+    text =
+        text.replace(
+            /\nView more jobs matching your skills at:[\s\S]*$/i,
+            ""
+        );
 
     let footer = "";
 
@@ -1099,41 +1365,31 @@ function createFreelancerEmail(raw) {
                 0,
                 regardsIndex
             );
-
     }
-
-
-    /*
-        Split the message into lines.
-    */
 
     const lines =
         text.split("\n").map(
-            line => line.trim()
+            function(line) {
+                return line.trim();
+            }
         );
-
 
     let html = "";
 
     let i = 0;
 
-
     while (i < lines.length) {
 
-        const line = lines[i];
-
+        const line =
+            lines[i];
 
         if (!line) {
 
             i++;
-            continue;
 
+            continue;
         }
 
-
-        /*
-            Greeting.
-        */
 
         if (
             /^Hi\s+/i.test(line) ||
@@ -1146,20 +1402,17 @@ function createFreelancerEmail(raw) {
                 "</div>";
 
             i++;
-            continue;
 
+            continue;
         }
 
-
-        /*
-            Project heading.
-        */
 
         const nextLine =
             lines[i + 1] || "";
 
         const afterNext =
             lines[i + 2] || "";
+
 
         if (
             line.length > 3 &&
@@ -1178,6 +1431,7 @@ function createFreelancerEmail(raw) {
                 linkify(nextLine) +
                 "</div>";
 
+
             if (
                 /^Skills:/i.test(afterNext)
             ) {
@@ -1192,13 +1446,8 @@ function createFreelancerEmail(raw) {
             } else {
 
                 i += 2;
-
             }
 
-
-            /*
-                Description.
-            */
 
             if (
                 /^Description:/i.test(
@@ -1212,13 +1461,8 @@ function createFreelancerEmail(raw) {
                     "</div>";
 
                 i++;
-
             }
 
-
-            /*
-                Project URL.
-            */
 
             if (
                 lines[i] &&
@@ -1238,7 +1482,6 @@ function createFreelancerEmail(raw) {
                     projectUrl =
                         "https://www.freelancer.com" +
                         projectUrl;
-
                 }
 
                 html +=
@@ -1249,19 +1492,14 @@ function createFreelancerEmail(raw) {
                     "</a>";
 
                 i++;
-
             }
+
 
             html += "</div>";
 
             continue;
-
         }
 
-
-        /*
-            Projects heading.
-        */
 
         if (
             /^Projects$/i.test(line)
@@ -1273,18 +1511,14 @@ function createFreelancerEmail(raw) {
             i++;
 
             continue;
-
         }
 
-
-        /*
-            Normal paragraph.
-        */
 
         let paragraph =
             line;
 
         i++;
+
 
         while (
             i < lines.length &&
@@ -1292,7 +1526,8 @@ function createFreelancerEmail(raw) {
             !/^Budget:/i.test(lines[i]) &&
             !/^Projects$/i.test(lines[i]) &&
             !/^Regards,/i.test(lines[i]) &&
-            !/^Hi\s+/i.test(lines[i])
+            !/^Hi\s+/i.test(lines[i]) &&
+            !/^Hello\s+/i.test(lines[i])
         ) {
 
             paragraph +=
@@ -1300,42 +1535,34 @@ function createFreelancerEmail(raw) {
                 lines[i];
 
             i++;
-
         }
+
 
         html +=
             '<p class="email-paragraph">' +
             linkify(paragraph) +
             "</p>";
-
     }
 
-
-    /*
-        Footer.
-    */
 
     if (footer) {
 
         html +=
             '<div class="email-footer">' +
             linkify(
-                footer
-                    .replace(
-                        /\n{2,}/g,
-                        "\n"
-                    )
+                footer.replace(
+                    /\n{2,}/g,
+                    "\n"
+                )
             ).replace(
                 /\n/g,
                 "<br>"
             ) +
             "</div>";
-
     }
 
 
     return html;
-
 }
 
 
@@ -1346,20 +1573,16 @@ function createReadableEmail(raw) {
     }
 
     const lower =
-        raw.toLowerCase();
+        String(raw).toLowerCase();
 
-
-    /*
-        If the email contains actual HTML,
-        safely remove scripts and iframes.
-    */
 
     if (
         lower.includes("<html") ||
         lower.includes("<!doctype")
     ) {
 
-        let html = raw;
+        let html =
+            String(raw);
 
         html =
             html.replace(
@@ -1385,14 +1608,15 @@ function createReadableEmail(raw) {
                 ""
             );
 
-        return html;
+        html =
+            html.replace(
+                /\son\w+\s*=\s*(['"]).*?\1/gi,
+                ""
+            );
 
+        return html;
     }
 
-
-    /*
-        Detect the Freelancer email format.
-    */
 
     if (
         lower.includes("projects") &&
@@ -1403,38 +1627,83 @@ function createReadableEmail(raw) {
         return createFreelancerEmail(
             raw
         );
-
     }
 
-
-    /*
-        Generic plain text email.
-    */
 
     const cleaned =
         cleanRawEmail(raw);
 
-    return (
-        "<div>" +
-        linkify(cleaned)
-            .replace(
-                /\n\n/g,
-                "</p><p>"
-            )
-            .replace(
-                /\n/g,
-                "<br>"
-            ) +
-        "</div>"
-    );
 
+    const paragraphs =
+        cleaned
+            .split(/\n\s*\n/)
+            .filter(
+                function(paragraph) {
+                    return paragraph.trim();
+                }
+            );
+
+
+    if (!paragraphs.length) {
+
+        return (
+            "<p>" +
+            linkify(cleaned) +
+            "</p>"
+        );
+    }
+
+
+    return paragraphs.map(
+        function(paragraph) {
+
+            return (
+                "<p>" +
+                linkify(
+                    paragraph
+                        .trim()
+                        .replace(
+                            /\n/g,
+                            "<br>"
+                        )
+                ) +
+                "</p>"
+            );
+
+        }
+    ).join("");
 }
 
 
-const rawEmailElement =
+const emailBodyElement =
     document.getElementById(
-        "rawEmail"
+        "emailBodyData"
     );
+
+
+let emailBody = "";
+
+
+if (emailBodyElement) {
+
+    try {
+
+        emailBody =
+            JSON.parse(
+                emailBodyElement.textContent || '""'
+            );
+
+    } catch (error) {
+
+        console.error(
+            "Could not read email body:",
+            error
+        );
+
+        emailBody = "";
+    }
+}
+
 
 const cleanEmailElement =
     document.getElementById(
@@ -1442,19 +1711,12 @@ const cleanEmailElement =
     );
 
 
-if (
-    rawEmailElement &&
-    cleanEmailElement
-) {
-
-    const rawEmail =
-        rawEmailElement.textContent || "";
+if (cleanEmailElement) {
 
     cleanEmailElement.innerHTML =
         createReadableEmail(
-            rawEmail
+            emailBody || ""
         );
-
 }
 
 </script>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>MailGuard Unsubscribe</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 40px;
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 50px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        h1 {
+            margin-top: 0;
+        }
+
+        .message {
+            margin: 25px 0;
+            padding: 18px;
+            background: #f1f5f9;
+            border-radius: 10px;
+            line-height: 1.6;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 12px 20px;
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .button:hover {
+            background: #1d4ed8;
+        }
+
+        .back {
+            display: inline-block;
+            margin-top: 20px;
+            color: #475569;
+            text-decoration: none;
+        }
+
+        .url {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            word-break: break-all;
+            font-size: 13px;
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-top: 25px;
+            padding: 12px 20px;
+            background: #e2e8f0;
+            color: #1e293b;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            border: 1px solid #cbd5e1;
+        }
+
+        .back-button:hover {
+            background: #cbd5e1;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    {% if success %}
+
+        <h1>Unsubscribe Successful</h1>
+
+    {% else %}
+
+        <h1>Unsubscribe</h1>
+
+    {% endif %}
+
+    <div class="message">
+        {{ message }}
+    </div>
+
+    {% if unsubscribe_url %}
+
+        <a
+            class="button"
+            href="{{ unsubscribe_url }}"
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+            Open Unsubscribe Link
+        </a>
+
+        <div class="url">
+            {{ unsubscribe_url }}
+        </div>
+
+    {% endif %}
+
+    <br>
+
+    {% if email %}
+
+        <a
+            class="back-button"
+            href="{{ url_for('email_detail', email_id=email['id']) }}"
+        >
+            ← Back to Email
+        </a>
+
+    {% else %}
+
+        <a
+            class="back"
+            href="{{ url_for('dashboard') }}"
+        >
+            ← Back to Dashboard
+        </a>
+
+    {% endif %}
+
+</div>
+
+</body>
+</html>

@@ -29,6 +29,11 @@ from MailGuard.category_detection.category_analyzer import (
     detect_category
 )
 
+from unsubscribe import (
+    analyze_raw_email,
+    perform_one_click_unsubscribe
+)
+
 from gmail_connector import fetch_emails
 
 from database import (
@@ -42,10 +47,7 @@ from database import (
     delete_email,
     delete_all_emails,
     mark_email_as_read,
-    mark_email_as_unread,
-    mark_emails_as_read,
-    mark_emails_as_unread,
-    update_emails_action
+    mark_email_as_unread
 )
 
 
@@ -106,6 +108,11 @@ analyze_header = header_parser.analyze_header
 
 app = Flask(__name__)
 
+app.secret_key = os.environ.get(
+    "FLASK_SECRET_KEY",
+    "mailguard-development-key"
+)
+
 
 # =========================================================
 # Database
@@ -117,6 +124,22 @@ initialize_database()
 # =========================================================
 # Helper Functions
 # =========================================================
+
+def get_raw_email_from_record(email_record):
+
+    raw_email = email_record.get(
+        "raw_email",
+        ""
+    )
+
+    if raw_email:
+        return raw_email
+
+    return email_record.get(
+        "body",
+        ""
+    )
+
 
 def get_value(
     data,
@@ -151,7 +174,7 @@ def get_sender(header_result):
     if not sender:
         return "Unknown"
 
-    return sender.strip()
+    return str(sender).strip()
 
 
 def get_subject(text):
@@ -211,7 +234,6 @@ def get_url_risk(url_results):
             TypeError,
             ValueError
         ):
-
             continue
 
     if not scores:
@@ -220,6 +242,28 @@ def get_url_risk(url_results):
     return round(
         max(scores)
     )
+
+
+def normalize_score(value):
+
+    try:
+
+        return round(
+            min(
+                max(
+                    float(value),
+                    0
+                ),
+                100
+            )
+        )
+
+    except (
+        TypeError,
+        ValueError
+    ):
+
+        return 0
 
 
 # =========================================================
@@ -263,6 +307,10 @@ def analyze_email_text(
         default=0
     )
 
+    header_score = normalize_score(
+        header_score
+    )
+
     mailguard_risk = calculate_risk(
         header_score,
         url_results,
@@ -294,57 +342,17 @@ def analyze_email_text(
         default=0
     )
 
-    try:
+    overall_risk = normalize_score(
+        overall_risk
+    )
 
-        overall_risk = round(
-            float(overall_risk)
-        )
+    phishing_score = normalize_score(
+        phishing_score
+    )
 
-    except (
-        TypeError,
-        ValueError
-    ):
-
-        overall_risk = 0
-
-    try:
-
-        phishing_score = round(
-            float(phishing_score)
-        )
-
-    except (
-        TypeError,
-        ValueError
-    ):
-
-        phishing_score = 0
-
-    try:
-
-        spam_score = round(
-            float(spam_score)
-        )
-
-    except (
-        TypeError,
-        ValueError
-    ):
-
-        spam_score = 0
-
-    try:
-
-        header_score = float(
-            header_score
-        )
-
-    except (
-        TypeError,
-        ValueError
-    ):
-
-        header_score = 0
+    spam_score = normalize_score(
+        spam_score
+    )
 
     phishing_detected = (
         phishing_score >= 50
@@ -383,15 +391,19 @@ def analyze_email_text(
         "phishing_result": phishing_result,
         "spam_result": spam_result,
         "category_result": category_result,
+
         "phishing_score": phishing_score,
         "spam_score": spam_score,
         "header_score": header_score,
+
         "mailguard_risk": mailguard_risk,
         "overall_risk": overall_risk,
         "risk_level": risk_level,
+
         "phishing_detected": phishing_detected,
         "spam_detected": spam_detected,
         "high_risk": high_risk,
+
         "category": category
     }
 
@@ -464,15 +476,7 @@ def index():
                 high_risk=analysis["high_risk"],
                 risk_score=analysis["overall_risk"],
                 risk_level=analysis["risk_level"],
-                header_risk=round(
-                    min(
-                        max(
-                            analysis["header_score"] * 10,
-                            0
-                        ),
-                        100
-                    )
-                ),
+                header_risk=analysis["header_score"],
                 url_risk=get_url_risk(
                     analysis["url_results"]
                 ),
@@ -604,6 +608,10 @@ def email_detail(
 # Email Action
 # =========================================================
 
+# =========================================================
+# Email Action
+# =========================================================
+
 @app.route(
     "/email/<int:email_id>/action/<action>",
     methods=["POST"]
@@ -617,8 +625,7 @@ def email_action(
         "inbox",
         "spam",
         "trash",
-        "blocked",
-        "unsubscribed"
+        "blocked"
     }
 
     if action not in allowed_actions:
@@ -639,6 +646,68 @@ def email_action(
             404
         )
 
+    email_record = dict(
+        email_record
+    )
+
+    # =====================================================
+    # Move to Spam
+    # =====================================================
+
+    if action == "spam":
+
+        update_email_action(
+            email_id,
+            "spam"
+        )
+
+        return redirect(
+            url_for(
+                "email_detail",
+                email_id=email_id
+            )
+        )
+
+    # =====================================================
+    # Move to Trash
+    # =====================================================
+
+    if action == "trash":
+
+        update_email_action(
+            email_id,
+            "trash"
+        )
+
+        return redirect(
+            url_for(
+                "email_detail",
+                email_id=email_id
+            )
+        )
+
+    # =====================================================
+    # Move back to Inbox
+    # =====================================================
+
+    if action == "inbox":
+
+        update_email_action(
+            email_id,
+            "inbox"
+        )
+
+        return redirect(
+            url_for(
+                "email_detail",
+                email_id=email_id
+            )
+        )
+
+    # =====================================================
+    # Block Sender
+    # =====================================================
+
     if action == "blocked":
 
         if block_sender is not None:
@@ -646,39 +715,331 @@ def email_action(
             try:
 
                 block_sender(
-                    email_record["sender"]
+                    email_record.get(
+                        "sender",
+                        ""
+                    )
                 )
 
-            except Exception:
+            except Exception as e:
 
-                pass
-
-    if action == "unsubscribed":
-
-        if add_unsubscribe_record is not None:
-
-            try:
-
-                add_unsubscribe_record(
-                    sender=email_record["sender"],
-                    email=email_record["sender"],
-                    status="completed"
+                print(
+                    "Block sender error:",
+                    str(e)
                 )
 
-            except Exception:
+        update_email_action(
+            email_id,
+            "blocked"
+        )
 
-                pass
-
-    update_email_action(
-        email_id,
-        action
-    )
+        return redirect(
+            url_for(
+                "email_detail",
+                email_id=email_id
+            )
+        )
 
     return redirect(
         url_for(
             "email_detail",
             email_id=email_id
         )
+    )
+
+# =========================================================
+# Unsubscribe
+# =========================================================
+
+@app.route(
+    "/email/<int:email_id>/unsubscribe",
+    methods=["POST"]
+)
+def unsubscribe_email(email_id):
+
+    email_record = get_email(email_id)
+
+    if email_record is None:
+        return "Email not found", 404
+
+    email_record = dict(email_record)
+
+    raw_email = get_raw_email_from_record(email_record)
+
+    print("\n" + "=" * 60)
+    print("MAILGUARD UNSUBSCRIBE")
+    print("=" * 60)
+    print("Email ID:", email_id)
+    print("Sender:", email_record.get("sender"))
+    print("Subject:", email_record.get("subject"))
+    print("Raw email length:", len(raw_email))
+
+    try:
+        analysis = analyze_raw_email(raw_email)
+
+        print("Unsubscribe analysis:")
+        print(analysis)
+
+    except Exception as e:
+
+        print("Unsubscribe analysis error:", str(e))
+
+        return render_template(
+            "unsubscribe.html",
+            success=False,
+            email=email_record,
+            message="MailGuard could not analyze the unsubscribe information.",
+            unsubscribe_url="",
+            method="unknown"
+        )
+
+    available = analysis.get(
+        "available",
+        False
+    )
+
+    if not available:
+
+        return render_template(
+            "unsubscribe.html",
+            success=False,
+            email=email_record,
+            message="This email does not contain a standard unsubscribe method.",
+            unsubscribe_url="",
+            method="none"
+        )
+
+    method = analysis.get(
+        "method",
+        ""
+    )
+
+    unsubscribe_url = analysis.get(
+        "url",
+        ""
+    )
+
+    print("Detected method:", method)
+    print("Unsubscribe URL:", unsubscribe_url)
+
+    # =====================================================
+    # One Click Unsubscribe
+    # =====================================================
+
+    if method == "one_click":
+
+        try:
+
+            result = perform_one_click_unsubscribe(
+                unsubscribe_url
+            )
+
+            print("One click result:")
+            print(result)
+
+        except Exception as e:
+
+            print(
+                "One click unsubscribe error:",
+                str(e)
+            )
+
+            return render_template(
+                "unsubscribe.html",
+                success=False,
+                email=email_record,
+                message=(
+                    "MailGuard attempted the one click "
+                    "unsubscribe request, but the request failed."
+                ),
+                unsubscribe_url=unsubscribe_url,
+                method=method
+            )
+
+        if result.get("success", False):
+
+            if add_unsubscribe_record is not None:
+
+                try:
+
+                    add_unsubscribe_record(
+                        sender=email_record.get(
+                            "sender",
+                            ""
+                        ),
+                        email=analysis.get(
+                            "sender_email",
+                            ""
+                        ),
+                        status="completed",
+                        unsubscribe_url=unsubscribe_url
+                    )
+
+                except Exception as e:
+
+                    print(
+                        "Could not save unsubscribe record:",
+                        str(e)
+                    )
+
+            update_email_action(
+                email_id,
+                "unsubscribed"
+            )
+
+            return render_template(
+                "unsubscribe.html",
+                success=True,
+                email=email_record,
+                message=(
+                    "You have been successfully "
+                    "unsubscribed from this email."
+                ),
+                unsubscribe_url=unsubscribe_url,
+                method=method
+            )
+
+        return render_template(
+            "unsubscribe.html",
+            success=False,
+            email=email_record,
+            message=result.get(
+                "message",
+                "The unsubscribe request failed."
+            ),
+            unsubscribe_url=unsubscribe_url,
+            method=method
+        )
+
+    # =====================================================
+    # HTTPS Unsubscribe
+    # =====================================================
+
+    if method == "http":
+
+        update_email_action(
+            email_id,
+            "unsubscribed"
+        )
+
+        if add_unsubscribe_record is not None:
+
+            try:
+
+                add_unsubscribe_record(
+                    sender=email_record.get(
+                        "sender",
+                        ""
+                    ),
+                    email=analysis.get(
+                        "sender_email",
+                        ""
+                    ),
+                    status="completed",
+                    unsubscribe_url=unsubscribe_url
+                )
+
+            except Exception as e:
+
+                print(
+                    "Could not save unsubscribe record:",
+                    str(e)
+                )
+
+        return render_template(
+            "unsubscribe.html",
+            success=True,
+            email=email_record,
+            message=(
+                "The unsubscribe link was opened. "
+                "MailGuard has moved this email to "
+                "your Unsubscribed folder."
+            ),
+            unsubscribe_url=unsubscribe_url,
+            method=method
+        )
+
+    # =====================================================
+    # HTTP Unsubscribe
+    # =====================================================
+
+    if method == "http":
+
+        update_email_action(
+            email_id,
+            "unsubscribed"
+        )
+
+        if add_unsubscribe_record is not None:
+
+            try:
+
+                add_unsubscribe_record(
+                    sender=email_record.get(
+                        "sender",
+                        ""
+                    ),
+                    email=analysis.get(
+                        "sender_email",
+                        ""
+                    ),
+                    status="completed",
+                    unsubscribe_url=unsubscribe_url
+                )
+
+            except Exception as e:
+
+                print(
+                    "Could not save unsubscribe record:",
+                    str(e)
+                )
+
+        return render_template(
+            "unsubscribe.html",
+            success=True,
+            email=email_record,
+            message=(
+                "The unsubscribe link was opened. "
+                "MailGuard has moved this email to "
+                "your Unsubscribed folder."
+            ),
+            unsubscribe_url=unsubscribe_url,
+            method=method
+        )
+
+    # =====================================================
+    # Mailto Unsubscribe
+    # =====================================================
+
+    if method == "mailto":
+
+        return render_template(
+            "unsubscribe.html",
+            success=False,
+            email=email_record,
+            message=(
+                "This email provides a mail based "
+                "unsubscribe address. Use the button "
+                "below to open your email application."
+            ),
+            unsubscribe_url=unsubscribe_url,
+            method=method
+        )
+
+    # =====================================================
+    # Unknown Method
+    # =====================================================
+
+    return render_template(
+        "unsubscribe.html",
+        success=False,
+        email=email_record,
+        message=(
+            "MailGuard detected an unsubscribe option, "
+            "but could not determine how to process it."
+        ),
+        unsubscribe_url=unsubscribe_url,
+        method=method
     )
 
 
@@ -754,7 +1115,6 @@ def delete_selected_emails():
             TypeError,
             ValueError
         ):
-
             continue
 
     if email_ids:
@@ -939,9 +1299,9 @@ def dashboard():
 
     category_counts = {}
 
-    for email in emails:
+    for email_record in emails:
 
-        category = email.get(
+        category = email_record.get(
             "category"
         )
 
@@ -1041,24 +1401,44 @@ def connect_gmail():
                     if not gmail_uid:
                         continue
 
-                    email_body = gmail_email.get(
-                        "body",
-                        ""
+                    plain_body = (
+                        gmail_email.get(
+                            "plain_body",
+                            ""
+                        )
                     )
 
-                    raw_headers = gmail_email.get(
-                        "headers",
-                        ""
+                    html_body = (
+                        gmail_email.get(
+                            "html_body",
+                            ""
+                        )
                     )
 
-                    if not email_body.strip():
+                    email_body = (
+                        plain_body
+                        if plain_body.strip()
+                        else html_body
+                    )
 
-                        email_body = raw_headers
+                    raw_email = (
+                        gmail_email.get(
+                            "raw_email",
+                            ""
+                        )
+                    )
+
+                    headers = (
+                        gmail_email.get(
+                            "headers",
+                            ""
+                        )
+                    )
 
                     input_text = (
-                        raw_headers
-                        if raw_headers.strip()
-                        else email_body
+                        headers
+                        + "\n\n"
+                        + email_body
                     )
 
                     analysis = analyze_email_text(
@@ -1078,58 +1458,69 @@ def connect_gmail():
                             "sender",
                             "Unknown"
                         ),
+
                         subject=gmail_email.get(
                             "subject",
                             ""
                         ),
+
                         body=email_body,
+
+                        raw_email=raw_email,
+
                         received_at=gmail_email.get(
                             "received_at",
                             ""
                         ),
+
                         category=analysis[
                             "category"
                         ],
+
                         spam=analysis[
                             "spam_detected"
                         ],
+
                         phishing=analysis[
                             "phishing_detected"
                         ],
+
                         high_risk=analysis[
                             "high_risk"
                         ],
+
                         risk_score=analysis[
                             "overall_risk"
                         ],
+
                         risk_level=analysis[
                             "risk_level"
                         ],
-                        header_risk=round(
-                            min(
-                                max(
-                                    analysis[
-                                        "header_score"
-                                    ] * 10,
-                                    0
-                                ),
-                                100
-                            )
-                        ),
+
+                        header_risk=analysis[
+                            "header_score"
+                        ],
+
                         url_risk=get_url_risk(
                             analysis[
                                 "url_results"
                             ]
                         ),
+
                         phishing_risk=analysis[
                             "phishing_score"
                         ],
+
                         spam_risk=analysis[
                             "spam_score"
                         ],
+
                         gmail_uid=gmail_uid,
+
                         gmail_account=email_address,
+
                         gmail_mailbox="INBOX",
+
                         message_id=gmail_email.get(
                             "message_id",
                             ""
@@ -1142,10 +1533,13 @@ def connect_gmail():
                     )
 
                     if is_read:
+
                         mark_email_as_read(
                             email_id
                         )
+
                     else:
+
                         mark_email_as_unread(
                             email_id
                         )
@@ -1159,7 +1553,7 @@ def connect_gmail():
                         imported += 1
 
                 success = (
-                    f"Gmail sync complete. "
+                    "Gmail sync complete. "
                     f"{imported} new emails, "
                     f"{updated} existing emails updated, "
                     f"{removed} deleted emails removed."
@@ -1254,7 +1648,6 @@ def dashboard_bulk_action():
                     )
 
                 except Exception:
-
                     pass
 
             update_email_action(
@@ -1279,7 +1672,6 @@ def dashboard_bulk_action():
                     )
 
                 except Exception:
-
                     pass
 
             update_email_action(

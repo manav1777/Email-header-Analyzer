@@ -1,262 +1,902 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta charset="UTF-8">
+    <title>Connect Gmail | MailGuard</title>
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
 
-<title>Connect Gmail</title>
+        * {
+            box-sizing: border-box;
+        }
 
-<style>
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fb;
+            color: #1f2937;
+        }
 
-* {
-    box-sizing: border-box;
-}
+        .topbar {
+            height: 70px;
+            background: #ffffff;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+        }
 
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: #f1f5f9;
-    color: #0f172a;
-}
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 22px;
+            font-weight: 700;
+            color: #2563eb;
+        }
 
-.sidebar {
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 240px;
-    height: 100vh;
-    background: #0f172a;
-    color: white;
-    padding: 25px 15px;
-}
+        .brand-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            background: #2563eb;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+        }
 
-.logo {
-    font-size: 25px;
-    font-weight: bold;
-    text-align: center;
-    margin-bottom: 35px;
-}
+        .back-link {
+            text-decoration: none;
+            color: #4b5563;
+            font-size: 14px;
+            font-weight: 600;
+        }
 
-.nav-item {
-    display: block;
-    padding: 13px 15px;
-    margin-bottom: 8px;
-    border-radius: 8px;
-    color: #cbd5e1;
-    text-decoration: none;
-}
+        .back-link:hover {
+            color: #2563eb;
+        }
 
-.nav-item:hover {
-    background: #1e293b;
-    color: white;
-}
+        .page-container {
+            max-width: 850px;
+            margin: 55px auto;
+            padding: 0 24px;
+        }
 
-.main {
-    margin-left: 240px;
-    padding: 40px;
-}
+        .page-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
 
-.container {
-    max-width: 700px;
-    margin: 0 auto;
-    background: white;
-    padding: 35px;
-    border-radius: 12px;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-}
+        .page-header h1 {
+            margin: 0 0 10px;
+            font-size: 32px;
+            color: #111827;
+        }
 
-h1 {
-    margin-top: 0;
-}
+        .page-header p {
+            margin: 0;
+            color: #6b7280;
+            font-size: 15px;
+        }
 
-.subtitle {
-    color: #475569;
-    line-height: 1.6;
-}
+        .connect-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 8px 25px rgba(15, 23, 42, 0.06);
+        }
 
-label {
-    display: block;
-    margin-top: 20px;
-    margin-bottom: 8px;
-    font-weight: bold;
-}
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
 
-input {
-    width: 100%;
-    padding: 13px;
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    font-size: 15px;
-}
+        .gmail-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            background: #eff6ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 21px;
+        }
 
-button {
-    margin-top: 25px;
-    padding: 13px 22px;
-    border: none;
-    border-radius: 8px;
-    background: #2563eb;
-    color: white;
-    font-size: 15px;
-    font-weight: bold;
-    cursor: pointer;
-}
+        .card-title h2 {
+            margin: 0;
+            font-size: 20px;
+            color: #111827;
+        }
 
-button:hover {
-    background: #1d4ed8;
-}
+        .card-description {
+            margin: 0 0 25px 54px;
+            color: #6b7280;
+            font-size: 14px;
+        }
 
-.error {
-    margin-top: 20px;
-    padding: 15px;
-    border-radius: 8px;
-    background: #fee2e2;
-    color: #991b1b;
-}
+        .info-box {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: flex-start;
+            gap: 13px;
+        }
 
-.success {
-    margin-top: 20px;
-    padding: 15px;
-    border-radius: 8px;
-    background: #dcfce7;
-    color: #166534;
-}
+        .info-icon {
+            width: 28px;
+            height: 28px;
+            flex-shrink: 0;
+            border-radius: 50%;
+            background: #2563eb;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+        }
 
-.note {
-    margin-top: 25px;
-    padding: 15px;
-    border-radius: 8px;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    line-height: 1.6;
-}
+        .info-content {
+            flex: 1;
+        }
 
-</style>
+        .info-content strong {
+            display: block;
+            margin-bottom: 4px;
+            color: #1e40af;
+            font-size: 14px;
+        }
 
+        .info-content p {
+            margin: 0;
+            color: #475569;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .learn-more {
+            margin-top: 8px;
+            padding: 0;
+            border: none;
+            background: transparent;
+            color: #2563eb;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .learn-more:hover {
+            text-decoration: underline;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 9px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background: #ffffff;
+        }
+
+        .form-group input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .input-help {
+            margin-top: 6px;
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-wrapper input {
+            padding-right: 85px;
+        }
+
+        .show-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            background: transparent;
+            color: #2563eb;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .connect-button {
+            width: 100%;
+            border: none;
+            border-radius: 9px;
+            padding: 13px 18px;
+            background: #2563eb;
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .connect-button:hover {
+            background: #1d4ed8;
+        }
+
+        .connect-button:active {
+            transform: scale(0.99);
+        }
+
+        .security-note {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-top: 20px;
+            padding: 13px;
+            background: #f9fafb;
+            border-radius: 9px;
+            color: #6b7280;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .security-note-icon {
+            color: #16a34a;
+            font-weight: 700;
+        }
+
+        .alert {
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .alert-error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+        }
+
+        .alert-success {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.55);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            width: 100%;
+            max-width: 620px;
+            max-height: 90vh;
+            overflow-y: auto;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 25px 60px rgba(15, 23, 42, 0.25);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 22px 24px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 20px;
+            color: #111827;
+        }
+
+        .close-button {
+            width: 34px;
+            height: 34px;
+            border: none;
+            border-radius: 8px;
+            background: #f3f4f6;
+            color: #4b5563;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .close-button:hover {
+            background: #e5e7eb;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .step {
+            display: flex;
+            gap: 14px;
+            margin-bottom: 23px;
+        }
+
+        .step-number {
+            width: 30px;
+            height: 30px;
+            flex-shrink: 0;
+            border-radius: 50%;
+            background: #2563eb;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-content h3 {
+            margin: 2px 0 6px;
+            font-size: 15px;
+            color: #111827;
+        }
+
+        .step-content p {
+            margin: 0;
+            color: #6b7280;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .important-box {
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+            border-radius: 10px;
+            padding: 14px;
+            margin-top: 5px;
+        }
+
+        .important-box strong {
+            color: #9a3412;
+            font-size: 13px;
+        }
+
+        .important-box p {
+            margin: 5px 0 0;
+            color: #7c2d12;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .modal-done {
+            border: none;
+            border-radius: 8px;
+            padding: 10px 18px;
+            background: #2563eb;
+            color: #ffffff;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .modal-done:hover {
+            background: #1d4ed8;
+        }
+
+        @media (max-width: 600px) {
+
+            .topbar {
+                padding: 0 18px;
+            }
+
+            .page-container {
+                margin: 30px auto;
+                padding: 0 15px;
+            }
+
+            .connect-card {
+                padding: 22px;
+            }
+
+            .page-header h1 {
+                font-size: 27px;
+            }
+
+            .card-description {
+                margin-left: 0;
+                margin-top: 12px;
+            }
+
+            .modal-body {
+                padding: 20px;
+            }
+
+        }
+
+    </style>
 </head>
 
 <body>
 
-<div class="sidebar">
+    <header class="topbar">
 
-    <div class="logo">
-        MailGuard
+        <div class="brand">
+            <div class="brand-icon">
+                M
+            </div>
+
+            MailGuard
+        </div>
+
+        <a
+            href="{{ url_for('dashboard') }}"
+            class="back-link"
+        >
+            ← Back to Dashboard
+        </a>
+
+    </header>
+
+
+    <main class="page-container">
+
+        <div class="page-header">
+
+            <h1>
+                Connect Gmail
+            </h1>
+
+            <p>
+                Connect your Gmail inbox so MailGuard can analyze
+                and organize your emails.
+            </p>
+
+        </div>
+
+
+        {% if error %}
+
+        <div class="alert alert-error">
+            {{ error }}
+        </div>
+
+        {% endif %}
+
+
+        {% if success %}
+
+        <div class="alert alert-success">
+            {{ success }}
+        </div>
+
+        {% endif %}
+
+
+        <div class="connect-card">
+
+            <div class="card-title">
+
+                <div class="gmail-icon">
+                    ✉
+                </div>
+
+                <h2>
+                    Gmail Account
+                </h2>
+
+            </div>
+
+            <p class="card-description">
+                Enter your Gmail address and a Google App Password
+                to securely connect your inbox.
+            </p>
+
+
+            <div class="info-box">
+
+                <div class="info-icon">
+                    i
+                </div>
+
+                <div class="info-content">
+
+                    <strong>
+                        Need help connecting Gmail?
+                    </strong>
+
+                    <p>
+                        MailGuard requires a Google App Password.
+                        Your regular Gmail password will not work.
+                    </p>
+
+                    <button
+                        type="button"
+                        class="learn-more"
+                        onclick="openHelp()"
+                    >
+                        View connection instructions →
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <form
+                method="POST"
+                action="{{ url_for('connect_gmail') }}"
+            >
+
+                <div class="form-group">
+
+                    <label for="email_address">
+                        Gmail Address
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email_address"
+                        name="email_address"
+                        placeholder="you@gmail.com"
+                        autocomplete="email"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="app_password">
+                        Google App Password
+                    </label>
+
+                    <div class="password-wrapper">
+
+                        <input
+                            type="password"
+                            id="app_password"
+                            name="app_password"
+                            placeholder="Enter your 16 character App Password"
+                            autocomplete="off"
+                            required
+                        >
+
+                        <button
+                            type="button"
+                            class="show-password"
+                            onclick="togglePassword()"
+                        >
+                            Show
+                        </button>
+
+                    </div>
+
+                    <div class="input-help">
+                        Use a Google App Password instead of your
+                        normal Gmail password.
+                    </div>
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="connect-button"
+                >
+                    Connect Gmail
+                </button>
+
+            </form>
+
+
+            <div class="security-note">
+
+                <span class="security-note-icon">
+                    ✓
+                </span>
+
+                <span>
+                    MailGuard uses your Gmail credentials only to
+                    establish the email connection through IMAP.
+                    Never enter your regular Google account password
+                    into MailGuard.
+                </span>
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <div
+        class="modal-overlay"
+        id="helpModal"
+        onclick="closeHelpOutside(event)"
+    >
+
+        <div
+            class="modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="helpTitle"
+        >
+
+            <div class="modal-header">
+
+                <h2 id="helpTitle">
+                    How to Connect Gmail
+                </h2>
+
+                <button
+                    type="button"
+                    class="close-button"
+                    onclick="closeHelp()"
+                    aria-label="Close"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <div class="modal-body">
+
+                <div class="step">
+
+                    <div class="step-number">
+                        1
+                    </div>
+
+                    <div class="step-content">
+
+                        <h3>
+                            Make sure 2 Step Verification is enabled
+                        </h3>
+
+                        <p>
+                            Open your Google Account security settings
+                            and make sure 2 Step Verification is enabled
+                            for your account.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="step">
+
+                    <div class="step-number">
+                        2
+                    </div>
+
+                    <div class="step-content">
+
+                        <h3>
+                            Create a Google App Password
+                        </h3>
+
+                        <p>
+                            In your Google Account, open App Passwords
+                            and create a new password for MailGuard.
+                            Google will generate a 16 character password.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="step">
+
+                    <div class="step-number">
+                        3
+                    </div>
+
+                    <div class="step-content">
+
+                        <h3>
+                            Enter your Gmail address
+                        </h3>
+
+                        <p>
+                            Enter the Gmail address of the inbox you
+                            want MailGuard to analyze.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="step">
+
+                    <div class="step-number">
+                        4
+                    </div>
+
+                    <div class="step-content">
+
+                        <h3>
+                            Enter the App Password
+                        </h3>
+
+                        <p>
+                            Copy the generated Google App Password
+                            and paste it into the App Password field
+                            in MailGuard.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="important-box">
+
+                    <strong>
+                        Important security note
+                    </strong>
+
+                    <p>
+                        Do not enter your normal Gmail password.
+                        MailGuard requires a Google App Password
+                        because Google does not allow standard Gmail
+                        passwords for this type of IMAP connection.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="modal-footer">
+
+                <button
+                    type="button"
+                    class="modal-done"
+                    onclick="closeHelp()"
+                >
+                    Got it
+                </button>
+
+            </div>
+
+        </div>
+
     </div>
 
-    <a href="/" class="nav-item">
-        Analyzer
-    </a>
 
-    <a href="/dashboard" class="nav-item">
-        Dashboard
-    </a>
+    <script>
 
-    <a href="/dashboard?filter=all" class="nav-item">
-        All Emails
-    </a>
+        function openHelp() {
 
-    <a href="/dashboard?filter=high_risk" class="nav-item">
-        High Risk
-    </a>
+            const modal =
+                document.getElementById("helpModal");
 
-    <a href="/dashboard?filter=phishing" class="nav-item">
-        Phishing
-    </a>
+            modal.classList.add("active");
 
-    <a href="/dashboard?filter=spam" class="nav-item">
-        Spam
-    </a>
+            document.body.style.overflow = "hidden";
+        }
 
-    <a href="/dashboard?filter=trash" class="nav-item">
-        Trash
-    </a>
 
-    <a href="/dashboard?filter=blocked" class="nav-item">
-        Blocked
-    </a>
+        function closeHelp() {
 
-    <a href="/dashboard?filter=unsubscribed" class="nav-item">
-        Unsubscribed
-    </a>
+            const modal =
+                document.getElementById("helpModal");
 
-</div>
+            modal.classList.remove("active");
 
-<div class="main">
+            document.body.style.overflow = "";
+        }
 
-<div class="container">
 
-<h1>
-Connect Gmail
-</h1>
+        function closeHelpOutside(event) {
 
-<p class="subtitle">
-Connect your Gmail account to MailGuard and analyze your recent emails for phishing, spam, suspicious URLs, and security risks.
-</p>
+            if (
+                event.target.id === "helpModal"
+            ) {
 
-<form method="POST">
+                closeHelp();
 
-<label for="email_address">
-Gmail Address
-</label>
+            }
 
-<input
-    type="email"
-    id="email_address"
-    name="email_address"
-    placeholder="you@gmail.com"
-    required
->
+        }
 
-<label for="app_password">
-Gmail App Password
-</label>
 
-<input
-    type="password"
-    id="app_password"
-    name="app_password"
-    placeholder="Enter your 16 character App Password"
-    required
->
+        function togglePassword() {
 
-<button type="submit">
-Connect and Import Emails
-</button>
+            const password =
+                document.getElementById("app_password");
 
-</form>
+            const button =
+                document.querySelector(".show-password");
 
-{% if error %}
+            if (
+                password.type === "password"
+            ) {
 
-<div class="error">
-{{ error }}
-</div>
+                password.type = "text";
 
-{% endif %}
+                button.textContent = "Hide";
 
-{% if success %}
+            } else {
 
-<div class="success">
-{{ success }}
-</div>
+                password.type = "password";
 
-{% endif %}
+                button.textContent = "Show";
 
-<div class="note">
+            }
 
-<strong>Important:</strong>
+        }
 
-You should use a Gmail App Password instead of your normal Gmail password.
 
-Your normal Gmail password will not work for this connection.
+        document.addEventListener(
+            "keydown",
+            function(event) {
 
-</div>
+                if (
+                    event.key === "Escape"
+                ) {
 
-</div>
+                    closeHelp();
 
-</div>
+                }
+
+            }
+        );
+
+    </script>
 
 </body>
-
 </html>

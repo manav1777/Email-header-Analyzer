@@ -57,6 +57,7 @@ def initialize_database():
             phishing_risk INTEGER DEFAULT 0,
             spam_risk INTEGER DEFAULT 0,
             action TEXT DEFAULT 'none',
+            raw_email TEXT,
             is_read INTEGER DEFAULT 0,
             created_at TEXT DEFAULT CURRENT_TIMESTAMP
         )
@@ -87,6 +88,7 @@ def initialize_database():
         "spam_risk": "INTEGER DEFAULT 0",
         "action": "TEXT DEFAULT 'none'",
         "is_read": "INTEGER DEFAULT 0",
+        "raw_email": "TEXT",
         "created_at": "TEXT DEFAULT CURRENT_TIMESTAMP"
     }
 
@@ -176,6 +178,7 @@ def add_email(
     subject="",
     body="",
     received_at="",
+    raw_email="",
     category="Other",
     spam=False,
     phishing=False,
@@ -231,6 +234,7 @@ def add_email(
                 received_at = ?,
                 category = ?,
                 spam = ?,
+                raw_email = ?,
                 phishing = ?,
                 high_risk = ?,
                 risk_score = ?,
@@ -249,6 +253,7 @@ def add_email(
                 received_at,
                 category,
                 int(spam),
+                raw_email,
                 int(phishing),
                 int(high_risk),
                 risk_score,
@@ -280,6 +285,7 @@ def add_email(
             sender,
             subject,
             body,
+            raw_email,
             received_at,
             category,
             spam,
@@ -296,7 +302,7 @@ def add_email(
         )
         VALUES (
             ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
-            ?, ?, ?, ?, ?, ?, ?, 'none', ?
+            ?, ?, ?, ?, ?, ?, ?, ?, 'none', ?
         )
         """,
         (
@@ -309,6 +315,7 @@ def add_email(
             sender,
             subject,
             body,
+            raw_email,
             received_at,
             category,
             int(spam),
@@ -398,7 +405,6 @@ def get_email_by_gmail_uid(
     connection.close()
 
     return result
-
 
 def sync_gmail_messages(
     gmail_account,
@@ -767,7 +773,6 @@ def update_unsubscribe_status(
     connection.commit()
 
     connection.close()
-
 
 def get_categories():
 

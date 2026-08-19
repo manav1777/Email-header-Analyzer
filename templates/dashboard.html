@@ -48,17 +48,23 @@ body {
     border-radius: 8px;
     color: #cbd5e1;
     text-decoration: none;
-    transition: 0.2s;
+    transition: all 0.2s ease;
+    border-left: 4px solid transparent;
+    font-weight: 500;
 }
 
 .nav-item:hover {
     background: #1e293b;
     color: white;
+    transform: translateX(3px);
 }
 
 .nav-item.active {
     background: #2563eb;
     color: white;
+    border-left: 4px solid #93c5fd;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
 }
 
 .main {
@@ -377,512 +383,512 @@ body {
 
 <div class="sidebar">
 
-<div class="logo">
-MailGuard
-</div>
+    <div class="logo">
+        MailGuard
+    </div>
 
-<a
-    href="/"
-    class="nav-item"
->
-Analyzer
-</a>
+    <a
+        href="/"
+        class="nav-item"
+    >
+        Analyzer
+    </a>
 
-<a
-    href="/dashboard"
-    class="nav-item"
->
-Dashboard
-</a>
+    <a
+        href="/dashboard"
+        class="nav-item {% if not filter_type or filter_type == 'all' %}active{% endif %}"
+    >
+        Dashboard
+    </a>
 
-<a
-    href="/dashboard?filter=all"
-    class="nav-item {% if filter_type == 'all' %}active{% endif %}"
->
-All Emails
-</a>
+    <a
+        href="/dashboard?filter=all"
+        class="nav-item {% if filter_type == 'all' %}active{% endif %}"
+    >
+        All Emails
+    </a>
 
-<a
-    href="/dashboard?filter=high_risk"
-    class="nav-item {% if filter_type == 'high_risk' %}active{% endif %}"
->
-High Risk
-</a>
+    <a
+        href="/dashboard?filter=high_risk"
+        class="nav-item {% if filter_type == 'high_risk' %}active{% endif %}"
+    >
+        High Risk
+    </a>
 
-<a
-    href="/dashboard?filter=phishing"
-    class="nav-item {% if filter_type == 'phishing' %}active{% endif %}"
->
-Phishing
-</a>
+    <a
+        href="/dashboard?filter=phishing"
+        class="nav-item {% if filter_type == 'phishing' %}active{% endif %}"
+    >
+        Phishing
+    </a>
 
-<a
-    href="/dashboard?filter=spam"
-    class="nav-item {% if filter_type == 'spam' %}active{% endif %}"
->
-Spam
-</a>
+    <a
+        href="/dashboard?filter=spam"
+        class="nav-item {% if filter_type == 'spam' %}active{% endif %}"
+    >
+        Spam
+    </a>
 
-<a
-    href="/dashboard?filter=trash"
-    class="nav-item {% if filter_type == 'trash' %}active{% endif %}"
->
-Trash
-</a>
+    <a
+        href="/dashboard?filter=trash"
+        class="nav-item {% if filter_type == 'trash' %}active{% endif %}"
+    >
+        Trash
+    </a>
 
-<a
-    href="/dashboard?filter=blocked"
-    class="nav-item {% if filter_type == 'blocked' %}active{% endif %}"
->
-Blocked
-</a>
+    <a
+        href="/dashboard?filter=blocked"
+        class="nav-item {% if filter_type == 'blocked' %}active{% endif %}"
+    >
+        Blocked
+    </a>
 
-<a
-    href="/dashboard?filter=unsubscribed"
-    class="nav-item {% if filter_type == 'unsubscribed' %}active{% endif %}"
->
-Unsubscribed
-</a>
+    <a
+        href="/dashboard?filter=unsubscribed"
+        class="nav-item {% if filter_type == 'unsubscribed' %}active{% endif %}"
+    >
+        Unsubscribed
+    </a>
 
-<a
-    href="/connect-gmail"
-    class="nav-item"
->
-Connect Gmail
-</a>
+    <a
+        href="/connect-gmail"
+        class="nav-item"
+    >
+        Connect Gmail
+    </a>
 
 </div>
 
 <div class="main">
 
-<div class="page-title">
+    <div class="page-title">
 
-{% if filter_type == "all" %}
+        {% if filter_type == "all" %}
 
-All Emails
+            All Emails
 
-{% elif filter_type == "high_risk" %}
+        {% elif filter_type == "high_risk" %}
 
-High Risk Emails
+            High Risk Emails
 
-{% elif filter_type == "phishing" %}
+        {% elif filter_type == "phishing" %}
 
-Phishing Emails
+            Phishing Emails
 
-{% elif filter_type == "spam" %}
+        {% elif filter_type == "spam" %}
 
-Spam Emails
+            Spam Emails
 
-{% elif filter_type == "trash" %}
+        {% elif filter_type == "trash" %}
 
-Trash
+            Trash
 
-{% elif filter_type == "blocked" %}
+        {% elif filter_type == "blocked" %}
 
-Blocked Senders
+            Blocked Senders
 
-{% elif filter_type == "unsubscribed" %}
+        {% elif filter_type == "unsubscribed" %}
 
-Unsubscribed Senders
+            Unsubscribed Senders
 
-{% else %}
+        {% else %}
 
-Emails
+            Emails
 
-{% endif %}
+        {% endif %}
 
-</div>
+    </div>
 
-<div class="stats">
+    <div class="stats">
 
-<div class="stat-card">
+        <div class="stat-card">
 
-<div class="stat-title">
-Inbox Emails
-</div>
+            <div class="stat-title">
+                Inbox Emails
+            </div>
 
-<div class="stat-number">
-{{ stats["all_emails"] }}
-</div>
+            <div class="stat-number">
+                {{ stats["all_emails"] }}
+            </div>
 
-</div>
+        </div>
 
-<div class="stat-card">
+        <div class="stat-card">
 
-<div class="stat-title">
-High Risk
-</div>
+            <div class="stat-title">
+                High Risk
+            </div>
 
-<div class="stat-number">
-{{ stats["high_risk"] }}
-</div>
+            <div class="stat-number">
+                {{ stats["high_risk"] }}
+            </div>
 
-</div>
+        </div>
 
-<div class="stat-card">
+        <div class="stat-card">
 
-<div class="stat-title">
-Phishing
-</div>
+            <div class="stat-title">
+                Phishing
+            </div>
 
-<div class="stat-number">
-{{ stats["phishing"] }}
-</div>
+            <div class="stat-number">
+                {{ stats["phishing"] }}
+            </div>
 
-</div>
+        </div>
 
-<div class="stat-card">
+        <div class="stat-card">
 
-<div class="stat-title">
-Spam
-</div>
+            <div class="stat-title">
+                Spam
+            </div>
 
-<div class="stat-number">
-{{ stats["spam"] }}
-</div>
+            <div class="stat-number">
+                {{ stats["spam"] }}
+            </div>
 
-</div>
+        </div>
 
-</div>
+    </div>
 
-<div class="email-section">
+    <div class="email-section">
 
-<div class="section-header">
+        <div class="section-header">
 
-<h2>
+            <h2>
 
-{% if filter_type == "blocked" %}
+                {% if filter_type == "blocked" %}
 
-Blocked Emails
+                    Blocked Emails
 
-{% elif filter_type == "unsubscribed" %}
+                {% elif filter_type == "unsubscribed" %}
 
-Unsubscribed Emails
+                    Unsubscribed Emails
 
-{% elif filter_type == "trash" %}
+                {% elif filter_type == "trash" %}
 
-Trash
+                    Trash
 
-{% elif filter_type == "spam" %}
+                {% elif filter_type == "spam" %}
 
-Spam
+                    Spam
 
-{% elif filter_type == "high_risk" %}
+                {% elif filter_type == "high_risk" %}
 
-High Risk Emails
+                    High Risk Emails
 
-{% elif filter_type == "phishing" %}
+                {% elif filter_type == "phishing" %}
 
-Phishing Emails
+                    Phishing Emails
 
-{% else %}
+                {% else %}
 
-Emails
+                    Emails
 
-{% endif %}
+                {% endif %}
 
-</h2>
+            </h2>
 
-</div>
+        </div>
 
-{% if emails %}
+        {% if emails %}
 
-<form
-    method="POST"
-    action="/dashboard/bulk-action"
-    id="bulkForm"
->
-
-<input
-    type="hidden"
-    name="filter_type"
-    value="{{ filter_type }}"
->
-
-<div class="bulk-toolbar">
-
-<div class="select-area">
-
-<input
-    type="checkbox"
-    id="selectAll"
->
-
-<label for="selectAll">
-Select All
-</label>
-
-</div>
-
-<div class="bulk-actions">
-
-{% if filter_type == "trash" %}
-
-<button
-    type="submit"
-    name="action"
-    value="inbox"
-    class="bulk-button inbox"
-    disabled
->
-Move to Inbox
-</button>
-
-<button
-    type="submit"
-    name="action"
-    value="spam"
-    class="bulk-button spam"
-    disabled
->
-Move to Spam
-</button>
-
-<button
-    type="submit"
-    name="action"
-    value="delete"
-    class="bulk-button delete"
-    disabled
->
-Delete Permanently
-</button>
-
-{% elif filter_type == "spam" %}
-
-<button
-    type="submit"
-    name="action"
-    value="inbox"
-    class="bulk-button inbox"
-    disabled
->
-Move to Inbox
-</button>
-
-<button
-    type="submit"
-    name="action"
-    value="trash"
-    class="bulk-button trash"
-    disabled
->
-Move to Trash
-</button>
-
-{% elif filter_type == "blocked" %}
-
-<button
-    type="submit"
-    name="action"
-    value="inbox"
-    class="bulk-button inbox"
-    disabled
->
-Move to Inbox
-</button>
-
-<button
-    type="submit"
-    name="action"
-    value="trash"
-    class="bulk-button trash"
-    disabled
->
-Move to Trash
-</button>
-
-{% elif filter_type == "unsubscribed" %}
-
-<button
-    type="submit"
-    name="action"
-    value="inbox"
-    class="bulk-button inbox"
-    disabled
->
-Move to Inbox
-</button>
-
-<button
-    type="submit"
-    name="action"
-    value="trash"
-    class="bulk-button trash"
-    disabled
->
-Move to Trash
-</button>
-
-{% else %}
-
-<button
-    type="submit"
-    name="action"
-    value="spam"
-    class="bulk-button spam"
-    disabled
->
-Move to Spam
-</button>
-
-<button
-    type="submit"
-    name="action"
-    value="trash"
-    class="bulk-button trash"
-    disabled
->
-Move to Trash
-</button>
-
-<button
-    type="submit"
-    name="action"
-    value="blocked"
-    class="bulk-button blocked"
-    disabled
->
-Block Sender
-</button>
-
-<button
-    type="submit"
-    name="action"
-    value="unsubscribed"
-    class="bulk-button unsubscribe"
-    disabled
->
-Unsubscribe
-</button>
-
-{% endif %}
-
-</div>
-
-<div
-    class="selected-count"
-    id="selectedCount"
->
-0 selected
-</div>
+        <form
+            method="POST"
+            action="/dashboard/bulk-action"
+            id="bulkForm"
+        >
+
+            <input
+                type="hidden"
+                name="filter_type"
+                value="{{ filter_type }}"
+            >
+
+            <div class="bulk-toolbar">
+
+                <div class="select-area">
+
+                    <input
+                        type="checkbox"
+                        id="selectAll"
+                    >
+
+                    <label for="selectAll">
+                        Select All
+                    </label>
+
+                </div>
+
+                <div class="bulk-actions">
+
+                    {% if filter_type == "trash" %}
+
+                    <button
+                        type="submit"
+                        name="action"
+                        value="inbox"
+                        class="bulk-button inbox"
+                        disabled
+                    >
+                        Move to Inbox
+                    </button>
+
+                    <button
+                        type="submit"
+                        name="action"
+                        value="spam"
+                        class="bulk-button spam"
+                        disabled
+                    >
+                        Move to Spam
+                    </button>
+
+                    <button
+                        type="submit"
+                        name="action"
+                        value="delete"
+                        class="bulk-button delete"
+                        disabled
+                    >
+                        Delete Permanently
+                    </button>
+
+                    {% elif filter_type == "spam" %}
+
+                    <button
+                        type="submit"
+                        name="action"
+                        value="inbox"
+                        class="bulk-button inbox"
+                        disabled
+                    >
+                        Move to Inbox
+                    </button>
+
+                    <button
+                        type="submit"
+                        name="action"
+                        value="trash"
+                        class="bulk-button trash"
+                        disabled
+                    >
+                        Move to Trash
+                    </button>
+
+                    {% elif filter_type == "blocked" %}
+
+                    <button
+                        type="submit"
+                        name="action"
+                        value="inbox"
+                        class="bulk-button inbox"
+                        disabled
+                    >
+                        Move to Inbox
+                    </button>
+
+                    <button
+                        type="submit"
+                        name="action"
+                        value="trash"
+                        class="bulk-button trash"
+                        disabled
+                    >
+                        Move to Trash
+                    </button>
+
+                    {% elif filter_type == "unsubscribed" %}
+
+                    <button
+                        type="submit"
+                        name="action"
+                        value="inbox"
+                        class="bulk-button inbox"
+                        disabled
+                    >
+                        Move to Inbox
+                    </button>
+
+                    <button
+                        type="submit"
+                        name="action"
+                        value="trash"
+                        class="bulk-button trash"
+                        disabled
+                    >
+                        Move to Trash
+                    </button>
+
+                    {% else %}
+
+                    <button
+                        type="submit"
+                        name="action"
+                        value="spam"
+                        class="bulk-button spam"
+                        disabled
+                    >
+                        Move to Spam
+                    </button>
+
+                    <button
+                        type="submit"
+                        name="action"
+                        value="trash"
+                        class="bulk-button trash"
+                        disabled
+                    >
+                        Move to Trash
+                    </button>
+
+                    <button
+                        type="submit"
+                        name="action"
+                        value="blocked"
+                        class="bulk-button blocked"
+                        disabled
+                    >
+                        Block Sender
+                    </button>
+
+                    <button
+                        type="submit"
+                        name="action"
+                        value="unsubscribed"
+                        class="bulk-button unsubscribe"
+                        disabled
+                    >
+                        Unsubscribe
+                    </button>
 
-</div>
+                    {% endif %}
 
-<div class="email-list">
+                </div>
 
-{% for email in emails %}
+                <div
+                    class="selected-count"
+                    id="selectedCount"
+                >
+                    0 selected
+                </div>
 
-<div class="email-card">
+            </div>
 
-<div class="email-selection">
+            <div class="email-list">
 
-<input
-    type="checkbox"
-    name="email_ids"
-    value="{{ email['id'] }}"
-    class="email-select"
->
-    
-</div>
+                {% for email in emails %}
 
-<a
-    href="/email/{{ email['id'] }}"
-    class="email-content"
->
+                <div class="email-card">
 
-<div class="email-top">
+                    <div class="email-selection">
 
-<div>
+                        <input
+                            type="checkbox"
+                            name="email_ids"
+                            value="{{ email['id'] }}"
+                            class="email-select"
+                        >
 
-<div class="email-subject">
-{{ email["subject"] or "No Subject" }}
-</div>
+                    </div>
 
-<div class="email-sender">
-{{ email["sender"] or "Unknown" }}
-</div>
+                    <a
+                        href="/email/{{ email['id'] }}"
+                        class="email-content"
+                    >
 
-<div class="email-category">
-Category:
-{{ email["category"] or "Other" }}
-</div>
+                        <div class="email-top">
 
-</div>
+                            <div>
 
-<div class="email-risk">
-{{ email["risk_score"] or 0 }}/100
-</div>
+                                <div class="email-subject">
+                                    {{ email["subject"] or "No Subject" }}
+                                </div>
 
-</div>
+                                <div class="email-sender">
+                                    {{ email["sender"] or "Unknown" }}
+                                </div>
 
-<div class="badges">
+                                <div class="email-category">
+                                    Category:
+                                    {{ email["category"] or "Other" }}
+                                </div>
 
-{% if email["high_risk"] %}
+                            </div>
 
-<span class="badge badge-high">
-High Risk
-</span>
+                            <div class="email-risk">
+                                {{ email["risk_score"] or 0 }}/100
+                            </div>
 
-{% endif %}
+                        </div>
 
-{% if email["phishing"] %}
+                        <div class="badges">
 
-<span class="badge badge-phishing">
-Phishing
-</span>
+                            {% if email["high_risk"] %}
 
-{% endif %}
+                            <span class="badge badge-high">
+                                High Risk
+                            </span>
 
-{% if email["spam"] %}
+                            {% endif %}
 
-<span class="badge badge-spam">
-Spam
-</span>
+                            {% if email["phishing"] %}
 
-{% endif %}
+                            <span class="badge badge-phishing">
+                                Phishing
+                            </span>
 
-<span class="badge badge-category">
-{{ email["category"] or "Other" }}
-</span>
+                            {% endif %}
 
-{% if email["action"] == "blocked" %}
+                            {% if email["spam"] %}
 
-<span class="badge badge-high">
-Blocked
-</span>
+                            <span class="badge badge-spam">
+                                Spam
+                            </span>
 
-{% endif %}
+                            {% endif %}
 
-{% if email["action"] == "unsubscribed" %}
+                            <span class="badge badge-category">
+                                {{ email["category"] or "Other" }}
+                            </span>
 
-<span class="badge badge-category">
-Unsubscribed
-</span>
+                            {% if email["action"] == "blocked" %}
 
-{% endif %}
+                            <span class="badge badge-high">
+                                Blocked
+                            </span>
 
-</div>
+                            {% endif %}
 
-</a>
+                            {% if email["action"] == "unsubscribed" %}
 
-</div>
+                            <span class="badge badge-category">
+                                Unsubscribed
+                            </span>
 
-{% endfor %}
+                            {% endif %}
 
-</div>
+                        </div>
 
-</form>
+                    </a>
 
-{% else %}
+                </div>
 
-<div class="empty">
-No emails found in this section.
-</div>
+                {% endfor %}
 
-{% endif %}
+            </div>
 
-</div>
+        </form>
+
+        {% else %}
+
+        <div class="empty">
+            No emails found in this section.
+        </div>
+
+        {% endif %}
+
+    </div>
 
 </div>
 
@@ -914,12 +920,7 @@ function updateSelection() {
     if (selectedCount) {
 
         selectedCount.textContent =
-            count +
-            (
-                count === 1
-                    ? " selected"
-                    : " selected"
-            );
+            count + " selected";
 
     }
 
@@ -984,9 +985,12 @@ emailCheckboxes.forEach(
 );
 
 
-document
-    .getElementById("bulkForm")
-    ?.addEventListener(
+const bulkForm =
+    document.getElementById("bulkForm");
+
+if (bulkForm) {
+
+    bulkForm.addEventListener(
         "submit",
         function(event) {
 
@@ -1028,6 +1032,8 @@ document
 
         }
     );
+
+}
 
 
 updateSelection();
